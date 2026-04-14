@@ -37,6 +37,17 @@ function requireClient(req, res, next) {
   catch { res.status(401).json({ error: 'Sesión expirada' }); }
 }
 
+// ── SETUP (crea admin la primera vez) ────────────────────────────────────────
+app.get('/api/setup', async (req, res) => {
+  try {
+    const exists = await Admin.findOne({ username: 'JuanMSilva' });
+    if (exists) return res.json({ message: 'Admin ya existe' });
+    const hash = bcrypt.hashSync('JuamiAdmin12-', 10);
+    await Admin.create({ username: 'JuanMSilva', password: hash });
+    res.json({ message: 'Admin creado correctamente' });
+  } catch (e) { res.status(500).json({ error: e.message }); }
+});
+
 // ── ADMIN LOGIN ───────────────────────────────────────────────────────────────
 app.post('/api/admin/login', async (req, res) => {
   try {
