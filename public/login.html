@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ingresar — StockFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --primary: #6C63FF; --primary-light: #EEF0FF; --text: #1A1A2E; --text-muted: #64748B; --border: #E2E8F0; --danger: #EF4444; --gradient: linear-gradient(135deg, #6C63FF, #9C78FF); }
+    body { font-family: 'Inter', sans-serif; background: linear-gradient(160deg, #f4f5ff, #eef0ff); min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 1.5rem; }
+    .logo { font-size: 1.6rem; font-weight: 900; color: var(--primary); margin-bottom: 2rem; }
+    .box { background: #fff; border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 380px; box-shadow: 0 20px 60px rgba(108,99,255,.15); }
+    .box h1 { font-size: 1.4rem; font-weight: 800; margin-bottom: .3rem; }
+    .box .sub { color: var(--text-muted); font-size: .88rem; margin-bottom: 2rem; }
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: .83rem; font-weight: 600; margin-bottom: .4rem; }
+    .field input { width: 100%; padding: .7rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-size: .95rem; font-family: inherit; transition: border-color .2s; }
+    .field input:focus { outline: none; border-color: var(--primary); }
+    .btn { width: 100%; padding: .85rem; background: var(--gradient); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: .5rem; transition: opacity .2s; }
+    .btn:hover { opacity: .9; }
+    .btn:disabled { opacity: .6; cursor: not-allowed; }
+    .err { color: var(--danger); font-size: .85rem; text-align: center; margin-top: .75rem; display: none; padding: .5rem; background: #FEE2E2; border-radius: 8px; }
+    .footer-link { text-align: center; margin-top: 1.5rem; font-size: .85rem; color: var(--text-muted); }
+    .footer-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+    .spinner { display: none; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+  </style>
+</head>
+<body>
+  <div class="logo">StockFlow</div>
+  <div class="box">
+    <h1>Ingresar al sistema</h1>
+    <p class="sub">Accedé a tu gestor de stock</p>
+    <div class="field"><label>Email</label><input type="email" id="email" placeholder="tu@email.com" /></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+    <button class="btn" id="btn" onclick="doLogin()">
+      <span id="btnTxt">Ingresar</span>
+      <div class="spinner" id="spin"></div>
+    </button>
+    <div class="err" id="err"></div>
+  </div>
+  <div class="footer-link">¿No tenés cuenta? <a href="/registro">Registrarse</a> · <a href="/">Inicio</a></div>
+
+  <script>
+    // Si ya tiene sesión, redirigir
+    if (localStorage.getItem('sf_token')) location.href = '/app';
+
+    async function doLogin() {
+      const email = document.getElementById('email').value.trim();
+      const password = document.getElementById('password').value;
+      const errEl = document.getElementById('err');
+      errEl.style.display = 'none';
+      if (!email || !password) { errEl.textContent = 'Completá todos los campos.'; errEl.style.display = 'block'; return; }
+
+      const btn = document.getElementById('btn');
+      const txt = document.getElementById('btnTxt');
+      const spin = document.getElementById('spin');
+      btn.disabled = true; txt.style.display = 'none'; spin.style.display = 'block';
+
+      try {
+        const res = await fetch('/api/client/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ email, password }) });
+        const data = await res.json();
+        if (!res.ok) { errEl.textContent = data.error; errEl.style.display = 'block'; btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none'; return; }
+        localStorage.setItem('sf_token', data.token);
+        localStorage.setItem('sf_user', JSON.stringify({ name: data.name, email: data.email, plan: data.plan, businessName: data.businessName }));
+        location.href = '/app';
+      } catch { errEl.textContent = 'Error de conexión.'; errEl.style.display = 'block'; btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none'; }
+    }
+  </script>
+</body>
+</html>

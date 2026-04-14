@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin — StockFlow</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --primary: #6C63FF; --primary-light: #EEF0FF; --primary-dark: #5A52D5;
+      --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
+      --text: #1A1A2E; --text-muted: #64748B; --border: #E2E8F0;
+      --bg: #F1F5F9; --card: #FFFFFF;
+      --sidebar: #0F0F1A; --sidebar-text: rgba(255,255,255,.7);
+      --gradient: linear-gradient(135deg, #6C63FF 0%, #9C78FF 100%);
+    }
+    body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
+
+    /* ── LOGIN ── */
+    #loginScreen {
+      position: fixed; inset: 0; background: linear-gradient(160deg, #f4f5ff, #eef0ff);
+      display: flex; align-items: center; justify-content: center; z-index: 9999;
+    }
+    .login-box {
+      background: #fff; border-radius: 20px; padding: 2.5rem;
+      box-shadow: 0 20px 60px rgba(108,99,255,.15); width: 100%; max-width: 380px;
+    }
+    .login-logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); text-align: center; margin-bottom: .25rem; }
+    .login-box .sub { text-align: center; color: var(--text-muted); font-size: .88rem; margin-bottom: 2rem; }
+    .field { margin-bottom: 1rem; }
+    .field label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; }
+    .field input {
+      width: 100%; padding: .7rem 1rem; border: 1.5px solid var(--border);
+      border-radius: 10px; font-size: .95rem; font-family: inherit;
+    }
+    .field input:focus { outline: none; border-color: var(--primary); }
+    .btn-login {
+      width: 100%; padding: .85rem; background: var(--gradient); color: #fff;
+      border: none; border-radius: 12px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; font-family: inherit; margin-top: .5rem;
+    }
+    .login-err { color: var(--danger); font-size: .85rem; text-align: center; margin-top: .75rem; display: none; }
+
+    /* ── SIDEBAR ── */
+    aside {
+      width: 220px; min-height: 100vh; background: var(--sidebar);
+      display: flex; flex-direction: column; flex-shrink: 0; position: sticky; top: 0;
+    }
+    .sidebar-logo {
+      padding: 1.5rem; font-size: 1.25rem; font-weight: 800;
+      color: #fff; border-bottom: 1px solid rgba(255,255,255,.08);
+    }
+    .sidebar-logo span { color: var(--primary); }
+    nav.sidebar-nav { flex: 1; padding: 1rem 0; }
+    .nav-item {
+      display: flex; align-items: center; gap: .75rem;
+      padding: .7rem 1.5rem; color: var(--sidebar-text);
+      cursor: pointer; transition: all .2s; border: none; background: none;
+      width: 100%; font-family: inherit; font-size: .9rem; font-weight: 500;
+    }
+    .nav-item:hover, .nav-item.active { color: #fff; background: rgba(108,99,255,.2); }
+    .nav-item.active { color: #fff; border-left: 3px solid var(--primary); }
+    .nav-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,.08); }
+    .sidebar-footer button {
+      color: var(--sidebar-text); background: none; border: none;
+      cursor: pointer; font-family: inherit; font-size: .85rem;
+    }
+    .sidebar-footer button:hover { color: #fff; }
+
+    /* ── MAIN ── */
+    main { flex: 1; padding: 2rem; overflow-x: hidden; }
+    .topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2rem; }
+    .topbar h1 { font-size: 1.45rem; font-weight: 800; }
+    .topbar .admin-badge {
+      background: var(--primary-light); color: var(--primary);
+      padding: .35rem .9rem; border-radius: 100px; font-size: .82rem; font-weight: 600;
+    }
+
+    /* ── STATS ── */
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 1.25rem; margin-bottom: 2rem; }
+    .stat-card {
+      background: var(--card); border-radius: 16px; padding: 1.4rem;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05); border: 1px solid var(--border);
+    }
+    .stat-card .stat-label { font-size: .78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; margin-bottom: .5rem; }
+    .stat-card .stat-val { font-size: 2rem; font-weight: 900; color: var(--text); }
+    .stat-card .stat-sub { font-size: .8rem; color: var(--success); margin-top: .25rem; }
+
+    /* ── TABS / SECTIONS ── */
+    .section { display: none; }
+    .section.active { display: block; }
+
+    /* ── TABLE ── */
+    .card {
+      background: var(--card); border-radius: 16px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.05); border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .card-header {
+      padding: 1.25rem 1.5rem; border-bottom: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: space-between; flex-wrap: gap;
+    }
+    .card-header h2 { font-size: 1rem; font-weight: 700; }
+    .filters { display: flex; gap: .6rem; flex-wrap: wrap; }
+    .filter-select, .filter-input {
+      padding: .45rem .85rem; border: 1.5px solid var(--border); border-radius: 8px;
+      font-size: .85rem; font-family: inherit; background: var(--bg);
+    }
+    .filter-select:focus, .filter-input:focus { outline: none; border-color: var(--primary); }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: .75rem 1rem; font-size: .78rem; font-weight: 700; color: var(--text-muted); background: var(--bg); text-transform: uppercase; letter-spacing: .04em; }
+    td { padding: .8rem 1rem; font-size: .88rem; border-top: 1px solid var(--border); vertical-align: middle; }
+    tr:hover td { background: #fafbff; }
+    .user-name { font-weight: 600; }
+    .user-email { color: var(--text-muted); font-size: .82rem; }
+    .badge { display: inline-block; padding: 3px 10px; border-radius: 100px; font-size: .75rem; font-weight: 600; }
+    .badge-active { background: #D1FAE5; color: #059669; }
+    .badge-inactive { background: #FEE2E2; color: #DC2626; }
+    .badge-pending { background: #FEF3C7; color: #D97706; }
+    .badge-basic { background: #E0E7FF; color: #4338CA; }
+    .badge-pro { background: #F3E8FF; color: #7C3AED; }
+    .action-btn {
+      padding: 4px 10px; border-radius: 6px; font-size: .78rem; font-weight: 600;
+      border: 1.5px solid; cursor: pointer; font-family: inherit; transition: all .15s;
+      background: none; margin-right: 4px;
+    }
+    .btn-edit { border-color: var(--primary); color: var(--primary); }
+    .btn-edit:hover { background: var(--primary-light); }
+    .btn-delete { border-color: var(--danger); color: var(--danger); }
+    .btn-delete:hover { background: #FEE2E2; }
+
+    /* ── MODAL ── */
+    .modal-overlay {
+      position: fixed; inset: 0; background: rgba(0,0,0,.4);
+      display: flex; align-items: center; justify-content: center;
+      z-index: 1000; display: none;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: #fff; border-radius: 20px; padding: 2rem;
+      width: 100%; max-width: 460px; max-height: 90vh; overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0,0,0,.2);
+    }
+    .modal h3 { font-size: 1.15rem; font-weight: 800; margin-bottom: 1.5rem; }
+    .modal-actions { display: flex; gap: .75rem; justify-content: flex-end; margin-top: 1.5rem; }
+    .btn { display: inline-flex; align-items: center; gap: 6px; padding: .6rem 1.25rem; border-radius: 9px; font-weight: 600; font-size: .88rem; cursor: pointer; border: none; font-family: inherit; transition: all .2s; }
+    .btn-primary { background: var(--gradient); color: #fff; }
+    .btn-primary:hover { opacity: .9; }
+    .btn-ghost { background: var(--bg); color: var(--text-muted); border: 1.5px solid var(--border); }
+    .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }
+    .btn-danger { background: var(--danger); color: #fff; }
+
+    .m-field { margin-bottom: 1rem; }
+    .m-field label { display: block; font-size: .83rem; font-weight: 600; margin-bottom: .35rem; }
+    .m-field input, .m-field select, .m-field textarea {
+      width: 100%; padding: .65rem .9rem; border: 1.5px solid var(--border);
+      border-radius: 9px; font-size: .9rem; font-family: inherit; background: #fff;
+    }
+    .m-field input:focus, .m-field select:focus, .m-field textarea:focus { outline: none; border-color: var(--primary); }
+    .m-field textarea { resize: vertical; min-height: 80px; }
+    .m-row { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; }
+
+    /* ── DISCOUNT CARDS ── */
+    .discounts-grid { padding: 1.5rem; display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
+    .discount-card {
+      border: 1.5px solid var(--border); border-radius: 14px; padding: 1.25rem;
+      position: relative; transition: all .2s;
+    }
+    .discount-card:hover { border-color: var(--primary); }
+    .discount-card.inactive { opacity: .55; }
+    .dc-code { font-size: 1.1rem; font-weight: 800; color: var(--primary); letter-spacing: .05em; margin-bottom: .35rem; }
+    .dc-desc { font-size: .83rem; color: var(--text-muted); margin-bottom: .75rem; }
+    .dc-tags { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .75rem; }
+    .dc-tag { background: var(--bg); border: 1px solid var(--border); padding: 2px 8px; border-radius: 6px; font-size: .75rem; font-weight: 600; }
+    .dc-actions { display: flex; gap: .5rem; }
+    .dc-actions button {
+      flex: 1; padding: 5px; border-radius: 7px; font-size: .78rem; font-weight: 600;
+      border: 1.5px solid; cursor: pointer; font-family: inherit; transition: all .15s; background: none;
+    }
+    .inactive-tag { position: absolute; top: .75rem; right: .75rem; background: #FEE2E2; color: var(--danger); padding: 2px 8px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
+    .active-tag { position: absolute; top: .75rem; right: .75rem; background: #D1FAE5; color: #059669; padding: 2px 8px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
+
+    /* loading */
+    .loading-row td { text-align: center; padding: 2.5rem; color: var(--text-muted); }
+    .empty-state { text-align: center; padding: 3rem; color: var(--text-muted); }
+    .empty-state .icon { font-size: 2.5rem; margin-bottom: .75rem; }
+
+    @media (max-width: 768px) { aside { display: none; } main { padding: 1rem; } }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">StockFlow</div>
+    <p class="sub">Panel de administración</p>
+    <div class="field"><label>Usuario</label><input type="text" id="loginUser" placeholder="admin" /></div>
+    <div class="field"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
+    <button class="btn-login" onclick="doLogin()">Ingresar</button>
+    <div class="login-err" id="loginErr">Credenciales incorrectas.</div>
+  </div>
+</div>
+
+<!-- SIDEBAR -->
+<aside>
+  <div class="sidebar-logo">Stock<span>Flow</span></div>
+  <nav class="sidebar-nav">
+    <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</button>
+    <button class="nav-item" onclick="showSection('users')"><span class="nav-icon">👥</span> Usuarios</button>
+    <button class="nav-item" onclick="showSection('discounts')"><span class="nav-icon">🏷️</span> Descuentos</button>
+  </nav>
+  <div class="sidebar-footer">
+    <button onclick="logout()">← Cerrar sesión</button>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main>
+  <div class="topbar">
+    <h1 id="pageTitle">Dashboard</h1>
+    <div class="admin-badge" id="adminBadge">Admin</div>
+  </div>
+
+  <!-- DASHBOARD -->
+  <div class="section active" id="sec-dashboard">
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-label">Total usuarios</div><div class="stat-val" id="sTotal">—</div></div>
+      <div class="stat-card"><div class="stat-label">Activos</div><div class="stat-val" id="sActive">—</div></div>
+      <div class="stat-card"><div class="stat-label">Plan Básico</div><div class="stat-val" id="sBasic">—</div></div>
+      <div class="stat-card"><div class="stat-label">Plan Pro</div><div class="stat-val" id="sPro">—</div></div>
+      <div class="stat-card"><div class="stat-label">Ingresos mensuales</div><div class="stat-val" id="sRevenue">—</div></div>
+    </div>
+    <div class="card">
+      <div class="card-header">
+        <h2>Últimos registros</h2>
+        <button class="btn btn-primary" onclick="showSection('users')">Ver todos →</button>
+      </div>
+      <table><thead><tr><th>Usuario</th><th>Plan</th><th>Estado</th><th>Precio final</th><th>Fecha</th></tr></thead>
+      <tbody id="recentUsers"><tr class="loading-row"><td colspan="5">Cargando...</td></tr></tbody></table>
+    </div>
+  </div>
+
+  <!-- USERS -->
+  <div class="section" id="sec-users">
+    <div class="card">
+      <div class="card-header">
+        <h2>Usuarios registrados</h2>
+        <div class="filters">
+          <input class="filter-input" type="text" placeholder="Buscar..." id="searchInput" oninput="loadUsers()" />
+          <select class="filter-select" id="filterStatus" onchange="loadUsers()">
+            <option value="">Todos los estados</option>
+            <option value="active">Activos</option>
+            <option value="inactive">Inactivos</option>
+            <option value="pending">Pendientes</option>
+          </select>
+          <select class="filter-select" id="filterPlan" onchange="loadUsers()">
+            <option value="">Todos los planes</option>
+            <option value="basic">Básico</option>
+            <option value="pro">Pro</option>
+          </select>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Usuario</th><th>Negocio</th><th>Plan</th><th>Estado</th><th>Precio</th><th>Descuento</th><th>Registro</th><th>Acciones</th></tr></thead>
+        <tbody id="usersTable"><tr class="loading-row"><td colspan="8">Cargando...</td></tr></tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- DISCOUNTS -->
+  <div class="section" id="sec-discounts">
+    <div class="card">
+      <div class="card-header">
+        <h2>Códigos de descuento</h2>
+        <button class="btn btn-primary" onclick="openNewDiscount()">+ Nuevo código</button>
+      </div>
+      <div class="discounts-grid" id="discountsGrid">
+        <div class="loading-row" style="padding:2.5rem;text-align:center;color:var(--text-muted);grid-column:1/-1">Cargando...</div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- MODAL EDITAR USUARIO -->
+<div class="modal-overlay" id="editUserModal">
+  <div class="modal">
+    <h3>Editar usuario</h3>
+    <input type="hidden" id="editUserId" />
+    <div class="m-row">
+      <div class="m-field"><label>Plan</label>
+        <select id="editPlan">
+          <option value="">Sin cambiar</option>
+          <option value="basic">Plan Básico</option>
+          <option value="pro">Plan Pro</option>
+        </select>
+      </div>
+      <div class="m-field"><label>Estado</label>
+        <select id="editStatus">
+          <option value="active">Activo</option>
+          <option value="inactive">Inactivo</option>
+          <option value="pending">Pendiente</option>
+        </select>
+      </div>
+    </div>
+    <div class="m-field"><label>Notas internas</label><textarea id="editNotes" placeholder="Notas visibles solo para el admin..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('editUserModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="saveUser()">Guardar cambios</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NUEVO DESCUENTO -->
+<div class="modal-overlay" id="newDiscountModal">
+  <div class="modal">
+    <h3>Crear código de descuento</h3>
+    <div class="m-field"><label>Código *</label><input type="text" id="dcCode" placeholder="PROMO2024" style="text-transform:uppercase" /></div>
+    <div class="m-field"><label>Descripción</label><input type="text" id="dcDesc" placeholder="Ej: Promoción de lanzamiento" /></div>
+    <div class="m-row">
+      <div class="m-field"><label>Tipo de descuento *</label>
+        <select id="dcType" onchange="updateDiscountPreview()">
+          <option value="percentage">Porcentaje (%)</option>
+          <option value="fixed">Monto fijo ($)</option>
+        </select>
+      </div>
+      <div class="m-field"><label>Valor *</label><input type="number" id="dcValue" placeholder="20" min="1" oninput="updateDiscountPreview()" /></div>
+    </div>
+    <div class="m-row">
+      <div class="m-field"><label>Aplica a</label>
+        <select id="dcPlan">
+          <option value="all">Todos los planes</option>
+          <option value="basic">Solo Básico</option>
+          <option value="pro">Solo Pro</option>
+        </select>
+      </div>
+      <div class="m-field"><label>Usos máximos</label><input type="number" id="dcMaxUses" placeholder="Sin límite" min="1" /></div>
+    </div>
+    <div class="m-field"><label>Vence el (opcional)</label><input type="date" id="dcExpires" /></div>
+    <div id="dcPreview" style="background:var(--primary-light);border-radius:10px;padding:.75rem 1rem;font-size:.85rem;color:var(--primary);font-weight:600;display:none;margin-top:.5rem"></div>
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal('newDiscountModal')">Cancelar</button>
+      <button class="btn btn-primary" onclick="createDiscount()">Crear código</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL CONFIRMAR ELIMINAR -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal" style="max-width:380px;text-align:center">
+    <div style="font-size:3rem;margin-bottom:1rem">🗑️</div>
+    <h3 id="confirmTitle">¿Eliminar?</h3>
+    <p style="color:var(--text-muted);font-size:.9rem;margin:1rem 0" id="confirmMsg">Esta acción no se puede deshacer.</p>
+    <div class="modal-actions" style="justify-content:center">
+      <button class="btn btn-ghost" onclick="closeModal('confirmModal')">Cancelar</button>
+      <button class="btn btn-danger" id="confirmBtn">Eliminar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+let token = null;
+const PLANS = { basic: 'Plan Básico', pro: 'Plan Pro' };
+
+// ── AUTH ──────────────────────────────────────────────────────────────────────
+async function doLogin() {
+  const username = document.getElementById('loginUser').value.trim();
+  const password = document.getElementById('loginPass').value;
+  if (!username || !password) return;
+  try {
+    const res = await fetch('/api/admin/login', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ username, password }) });
+    const data = await res.json();
+    if (!res.ok) { document.getElementById('loginErr').style.display = 'block'; return; }
+    token = data.token;
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminBadge').textContent = data.username;
+    loadDashboard();
+  } catch { document.getElementById('loginErr').style.display = 'block'; }
+}
+
+function logout() {
+  token = null;
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('loginUser').value = '';
+  document.getElementById('loginPass').value = '';
+}
+
+function authHeaders() { return { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token }; }
+
+// ── NAVIGATION ────────────────────────────────────────────────────────────────
+const sections = { dashboard: 'Dashboard', users: 'Usuarios', discounts: 'Códigos de Descuento' };
+function showSection(id) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+  document.getElementById('sec-' + id).classList.add('active');
+  document.querySelector(`[onclick="showSection('${id}')"]`).classList.add('active');
+  document.getElementById('pageTitle').textContent = sections[id];
+  if (id === 'dashboard') loadDashboard();
+  if (id === 'users') loadUsers();
+  if (id === 'discounts') loadDiscounts();
+}
+
+// ── DASHBOARD ─────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const res = await fetch('/api/admin/users', { headers: authHeaders() });
+  const { users, stats } = await res.json();
+  document.getElementById('sTotal').textContent = stats.total;
+  document.getElementById('sActive').textContent = stats.active;
+  document.getElementById('sBasic').textContent = stats.basic;
+  document.getElementById('sPro').textContent = stats.pro;
+  document.getElementById('sRevenue').textContent = '$' + (stats.monthly_revenue || 0).toLocaleString('es-AR');
+
+  const recent = users.slice(0, 8);
+  document.getElementById('recentUsers').innerHTML = recent.length ? recent.map(u => `
+    <tr>
+      <td><div class="user-name">${esc(u.name)}</div><div class="user-email">${esc(u.email)}</div></td>
+      <td><span class="badge badge-${u.plan}">${PLANS[u.plan]}</span></td>
+      <td><span class="badge badge-${u.status}">${statusLabel(u.status)}</span></td>
+      <td>$${u.final_price.toLocaleString('es-AR')}</td>
+      <td>${fmtDate(u.created_at)}</td>
+    </tr>`).join('') : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">Sin usuarios aún</td></tr>';
+}
+
+// ── USERS ─────────────────────────────────────────────────────────────────────
+async function loadUsers() {
+  const search = document.getElementById('searchInput').value;
+  const status = document.getElementById('filterStatus').value;
+  const plan = document.getElementById('filterPlan').value;
+  const params = new URLSearchParams();
+  if (search) params.set('search', search);
+  if (status) params.set('status', status);
+  if (plan) params.set('plan', plan);
+
+  const res = await fetch('/api/admin/users?' + params, { headers: authHeaders() });
+  const { users } = await res.json();
+
+  document.getElementById('usersTable').innerHTML = users.length ? users.map(u => `
+    <tr>
+      <td><div class="user-name">${esc(u.name)}</div><div class="user-email">${esc(u.email)}${u.phone ? ' · ' + esc(u.phone) : ''}</div></td>
+      <td>${u.business_name ? esc(u.business_name) : '<span style="color:var(--text-muted)">—</span>'}</td>
+      <td><span class="badge badge-${u.plan}">${PLANS[u.plan]}</span></td>
+      <td><span class="badge badge-${u.status}">${statusLabel(u.status)}</span></td>
+      <td>
+        ${u.original_price !== u.final_price ? `<span style="text-decoration:line-through;color:var(--text-muted);font-size:.78rem">$${u.original_price.toLocaleString('es-AR')}</span><br>` : ''}
+        <strong>$${u.final_price.toLocaleString('es-AR')}</strong>
+      </td>
+      <td>${u.discount_code ? `<span class="badge badge-basic">${esc(u.discount_code)}</span>` : '—'}</td>
+      <td style="white-space:nowrap">${fmtDate(u.created_at)}</td>
+      <td>
+        <button class="action-btn btn-edit" onclick="openEditUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">Editar</button>
+        <button class="action-btn btn-delete" onclick="confirmDelete('user', ${u.id}, '${esc(u.name)}')">Eliminar</button>
+      </td>
+    </tr>`).join('')
+  : '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--text-muted)">Sin usuarios con esos filtros.</td></tr>';
+}
+
+// ── EDIT USER ────────────────────────────────────────────────────────────────
+function openEditUser(u) {
+  document.getElementById('editUserId').value = u.id;
+  document.getElementById('editPlan').value = '';
+  document.getElementById('editStatus').value = u.status;
+  document.getElementById('editNotes').value = u.notes || '';
+  document.getElementById('editUserModal').classList.add('open');
+}
+
+async function saveUser() {
+  const id = document.getElementById('editUserId').value;
+  const body = {
+    status: document.getElementById('editStatus').value,
+    notes: document.getElementById('editNotes').value,
+  };
+  const plan = document.getElementById('editPlan').value;
+  if (plan) body.plan = plan;
+
+  await fetch('/api/admin/users/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify(body) });
+  closeModal('editUserModal');
+  loadUsers(); loadDashboard();
+}
+
+// ── DISCOUNTS ────────────────────────────────────────────────────────────────
+async function loadDiscounts() {
+  const res = await fetch('/api/admin/discounts', { headers: authHeaders() });
+  const discounts = await res.json();
+  const grid = document.getElementById('discountsGrid');
+
+  if (!discounts.length) {
+    grid.innerHTML = '<div class="empty-state" style="grid-column:1/-1"><div class="icon">🏷️</div><p>No hay códigos de descuento. Creá uno.</p></div>';
+    return;
+  }
+
+  grid.innerHTML = discounts.map(d => {
+    const typeLabel = d.discount_type === 'percentage' ? d.discount_value + '% OFF' : '$' + d.discount_value.toLocaleString('es-AR') + ' OFF';
+    const planLabel = d.applicable_plans === 'all' ? 'Todos los planes' : d.applicable_plans === 'basic' ? 'Solo Básico' : 'Solo Pro';
+    const usesLabel = d.max_uses ? `${d.current_uses}/${d.max_uses} usos` : `${d.current_uses} usos`;
+    const exp = d.expires_at ? 'Vence ' + fmtDate(d.expires_at) : 'Sin vencimiento';
+
+    return `<div class="discount-card ${d.active ? '' : 'inactive'}">
+      <div class="${d.active ? 'active-tag' : 'inactive-tag'}">${d.active ? 'Activo' : 'Inactivo'}</div>
+      <div class="dc-code">${esc(d.code)}</div>
+      <div class="dc-desc">${esc(d.description || 'Sin descripción')}</div>
+      <div class="dc-tags">
+        <span class="dc-tag">💰 ${typeLabel}</span>
+        <span class="dc-tag">📦 ${planLabel}</span>
+        <span class="dc-tag">🔢 ${usesLabel}</span>
+        <span class="dc-tag">📅 ${exp}</span>
+      </div>
+      <div class="dc-actions">
+        <button style="border-color:${d.active ? 'var(--warning)' : 'var(--success)'};color:${d.active ? 'var(--warning)' : 'var(--success)'}"
+          onclick="toggleDiscount(${d.id}, ${d.active})">${d.active ? 'Desactivar' : 'Activar'}</button>
+        <button style="border-color:var(--danger);color:var(--danger)" onclick="confirmDelete('discount', ${d.id}, '${esc(d.code)}')">Eliminar</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openNewDiscount() {
+  document.getElementById('dcCode').value = '';
+  document.getElementById('dcDesc').value = '';
+  document.getElementById('dcType').value = 'percentage';
+  document.getElementById('dcValue').value = '';
+  document.getElementById('dcPlan').value = 'all';
+  document.getElementById('dcMaxUses').value = '';
+  document.getElementById('dcExpires').value = '';
+  document.getElementById('dcPreview').style.display = 'none';
+  document.getElementById('newDiscountModal').classList.add('open');
+}
+
+function updateDiscountPreview() {
+  const type = document.getElementById('dcType').value;
+  const val = parseInt(document.getElementById('dcValue').value);
+  const preview = document.getElementById('dcPreview');
+  if (!val || val <= 0) { preview.style.display = 'none'; return; }
+
+  const prices = { basic: 30000, pro: 50000 };
+  let text = '';
+  if (type === 'percentage') {
+    text = `Básico: $${Math.round(prices.basic * (1 - val/100)).toLocaleString('es-AR')}/mes · Pro: $${Math.round(prices.pro * (1 - val/100)).toLocaleString('es-AR')}/mes`;
+  } else {
+    text = `Básico: $${Math.max(0, prices.basic - val).toLocaleString('es-AR')}/mes · Pro: $${Math.max(0, prices.pro - val).toLocaleString('es-AR')}/mes`;
+  }
+  preview.textContent = '→ ' + text;
+  preview.style.display = 'block';
+}
+
+async function createDiscount() {
+  const body = {
+    code: document.getElementById('dcCode').value.trim(),
+    description: document.getElementById('dcDesc').value.trim(),
+    discount_type: document.getElementById('dcType').value,
+    discount_value: document.getElementById('dcValue').value,
+    applicable_plans: document.getElementById('dcPlan').value,
+    max_uses: document.getElementById('dcMaxUses').value || null,
+    expires_at: document.getElementById('dcExpires').value || null
+  };
+  if (!body.code || !body.discount_value) { alert('Completá el código y el valor.'); return; }
+
+  const res = await fetch('/api/admin/discounts', { method: 'POST', headers: authHeaders(), body: JSON.stringify(body) });
+  const data = await res.json();
+  if (!res.ok) { alert(data.error); return; }
+  closeModal('newDiscountModal');
+  loadDiscounts();
+}
+
+async function toggleDiscount(id, currentActive) {
+  await fetch('/api/admin/discounts/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify({ active: !currentActive }) });
+  loadDiscounts();
+}
+
+// ── CONFIRM DELETE ────────────────────────────────────────────────────────────
+function confirmDelete(type, id, name) {
+  document.getElementById('confirmTitle').textContent = `¿Eliminar ${type === 'user' ? 'usuario' : 'código'}?`;
+  document.getElementById('confirmMsg').textContent = `Se eliminará "${name}". Esta acción no se puede deshacer.`;
+  document.getElementById('confirmBtn').onclick = async () => {
+    const url = type === 'user' ? '/api/admin/users/' + id : '/api/admin/discounts/' + id;
+    await fetch(url, { method: 'DELETE', headers: authHeaders() });
+    closeModal('confirmModal');
+    if (type === 'user') { loadUsers(); loadDashboard(); }
+    else loadDiscounts();
+  };
+  document.getElementById('confirmModal').classList.add('open');
+}
+
+// ── UTILS ────────────────────────────────────────────────────────────────────
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+function statusLabel(s) { return { active: 'Activo', inactive: 'Inactivo', pending: 'Pendiente' }[s] || s; }
+function fmtDate(s) {
+  if (!s) return '—';
+  const d = new Date(s);
+  return d.toLocaleDateString('es-AR', { day:'2-digit', month:'2-digit', year:'numeric' });
+}
+
+// Cerrar modales al hacer click fuera
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+});
+</script>
+</body>
+</html>
