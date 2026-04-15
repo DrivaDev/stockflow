@@ -560,10 +560,10 @@ app.put('/api/client/products/:id', requireClient, requireSubscription, async (r
   try {
     const prod = await Product.findOne({ _id: req.params.id, userId: req.client.id });
     if (!prod) return res.status(404).json({ error: 'Producto no encontrado' });
-    const { name, category, barcode, minStock, costPrice, salePrice, unit, description, emoji } = req.body;
+    const { name, category, barcode, minStock, costPrice, salePrice, unit, description, emoji, stock } = req.body;
     const update = {};
     if (name) update.name = name.trim();
-    if (category) update.category = category;
+    if (category !== undefined) update.category = category || 'General';
     if (barcode !== undefined) update.barcode = barcode;
     if (minStock !== undefined) update.minStock = parseInt(minStock) || 0;
     if (costPrice !== undefined) update.costPrice = parseFloat(costPrice) || 0;
@@ -571,6 +571,19 @@ app.put('/api/client/products/:id', requireClient, requireSubscription, async (r
     if (unit) update.unit = unit;
     if (description !== undefined) update.description = description;
     if (emoji !== undefined) update.emoji = emoji || null;
+    if (stock !== undefined) {
+      const newStock = parseInt(stock) || 0;
+      const oldStock = prod.stock;
+      update.stock = newStock;
+      if (newStock !== oldStock) {
+        await Movement.create({
+          userId: req.client.id, productId: prod._id,
+          productName: prod.name, category: prod.category || 'General',
+          type: 'adjustment', quantity: Math.abs(newStock - oldStock),
+          stockBefore: oldStock, stockAfter: newStock, note: 'Edición de producto'
+        });
+      }
+    }
     await Product.updateOne({ _id: req.params.id }, { $set: update });
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }

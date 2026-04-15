@@ -648,7 +648,7 @@
     </div>
     <div class="m-row">
       <div class="m-field">
-        <label>Stock inicial</label>
+        <label id="pStockLabel">Stock actual</label>
         <input type="number" id="pStock" placeholder="0" min="0" />
       </div>
       <div class="m-field">
@@ -681,26 +681,6 @@
   </div>
 </div>
 
-<!-- MODAL: AJUSTE DE STOCK -->
-<div class="modal-overlay" id="adjModal">
-  <div class="modal" style="max-width:380px">
-    <h3>Ajuste de stock</h3>
-    <input type="hidden" id="adjProductId" />
-    <p id="adjProductName" style="color:var(--text-muted);font-size:.88rem;margin-bottom:1.25rem"></p>
-    <div class="m-field">
-      <label>Nuevo stock total *</label>
-      <input type="number" id="adjQty" placeholder="0" min="0" />
-    </div>
-    <div class="m-field">
-      <label>Motivo del ajuste</label>
-      <input type="text" id="adjNote" placeholder="Ej: Conteo físico, merma, rotura..." />
-    </div>
-    <div class="modal-actions">
-      <button class="btn btn-ghost" onclick="closeModal('adjModal')">Cancelar</button>
-      <button class="btn btn-primary" onclick="saveAdjuste()">Confirmar ajuste</button>
-    </div>
-  </div>
-</div>
 
 <!-- MODAL: CONFIRMAR ELIMINAR -->
 <div class="modal-overlay" id="confirmModal">
@@ -927,7 +907,6 @@ async function loadProducts() {
         <td>${p.salePrice > 0 ? fmt(p.salePrice) : '—'}</td>
         <td>${esc(p.unit)}</td>
         <td>
-          <button class="action-btn btn-adj" onclick="openAdjModal('${p._id}','${esc(p.name)}',${p.stock})">Ajuste</button>
           <button class="action-btn btn-edit" onclick="openProductModal(${JSON.stringify(p).replace(/"/g,'&quot;')})">Editar</button>
           <button class="action-btn btn-del" onclick="confirmDelete('${p._id}','${esc(p.name)}')">Eliminar</button>
         </td>
@@ -938,6 +917,7 @@ async function loadProducts() {
 // ── PRODUCT MODAL ─────────────────────────────────────────────────────────────
 async function openProductModal(prod = null) {
   document.getElementById('productModalTitle').textContent = prod ? 'Editar producto' : 'Agregar producto';
+  document.getElementById('pStockLabel').textContent = prod ? 'Stock actual' : 'Stock inicial';
   document.getElementById('productId').value    = prod?._id || '';
   document.getElementById('pEmoji').value       = prod?.emoji || '';
   document.getElementById('emojiBtnLabel').textContent = prod?.emoji || '➕';
@@ -946,7 +926,7 @@ async function openProductModal(prod = null) {
   document.getElementById('pCategory').value    = prod?.category || '';
   document.getElementById('pUnit').value        = prod?.unit || 'unidad';
   document.getElementById('pStock').value       = prod?.stock ?? '';
-  document.getElementById('pStock').disabled    = !!prod;
+  document.getElementById('pStock').disabled    = false;
   document.getElementById('pMinStock').value    = prod?.minStock ?? 5;
   document.getElementById('pCostPrice').value   = prod?.costPrice || '';
   document.getElementById('pSalePrice').value   = prod?.salePrice || '';
@@ -965,13 +945,13 @@ async function saveProduct() {
     emoji: document.getElementById('pEmoji').value.trim() || null,
     category: document.getElementById('pCategory').value.trim() || 'General',
     unit: document.getElementById('pUnit').value,
+    stock: document.getElementById('pStock').value || 0,
     minStock: document.getElementById('pMinStock').value,
     costPrice: document.getElementById('pCostPrice').value,
     salePrice: document.getElementById('pSalePrice').value,
     barcode: document.getElementById('pBarcode').value.trim(),
     description: document.getElementById('pDescription').value.trim(),
   };
-  if (!id) body.stock = document.getElementById('pStock').value || 0;
   if (!body.name) { toast('El nombre es requerido', 'error'); return; }
   const res = await fetch(id ? '/api/client/products/' + id : '/api/client/products', {
     method: id ? 'PUT' : 'POST', headers: authH(), body: JSON.stringify(body)
@@ -1038,30 +1018,6 @@ document.addEventListener('click', e => {
   }
 });
 
-// ── AJUSTE ────────────────────────────────────────────────────────────────────
-function openAdjModal(id, name, stock) {
-  document.getElementById('adjProductId').value = id;
-  document.getElementById('adjProductName').textContent = `${name} — Stock actual: ${stock}`;
-  document.getElementById('adjQty').value = stock;
-  document.getElementById('adjNote').value = '';
-  document.getElementById('adjModal').classList.add('open');
-}
-
-async function saveAdjuste() {
-  const productId = document.getElementById('adjProductId').value;
-  const quantity  = document.getElementById('adjQty').value;
-  const note      = document.getElementById('adjNote').value.trim();
-  if (!quantity || parseInt(quantity) < 0) { toast('Ingresá una cantidad válida', 'error'); return; }
-  const res = await fetch('/api/client/movements', {
-    method: 'POST', headers: authH(),
-    body: JSON.stringify({ productId, type: 'adjustment', quantity, note })
-  });
-  const data = await res.json();
-  if (!res.ok) { toast(data.error, 'error'); return; }
-  closeModal('adjModal');
-  toast(`Stock ajustado a ${data.newStock}`, 'success');
-  loadProducts(); loadDashboard();
-}
 
 // ── VENTAS ────────────────────────────────────────────────────────────────────
 let ventaCart = []; // [{ productId, name, emoji, unit, salePrice, stock, quantity }]
@@ -1512,7 +1468,6 @@ function confirmDelete(id, name) {
 // ── UTILS ─────────────────────────────────────────────────────────────────────
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
-  document.querySelectorAll('#productModal .m-field div[style]').forEach(e => e.remove());
 }
 document.querySelectorAll('.modal-overlay').forEach(o =>
   o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); })
