@@ -65,7 +65,11 @@ function requireClient(req, res, next) {
   catch { res.status(401).json({ error: 'Sesión expirada' }); }
 }
 
+// ── MODO GRATUITO: poner FREE_MODE=false en env para volver a cobrar ──────────
+const FREE_MODE = process.env.FREE_MODE !== 'false';
+
 async function requireSubscription(req, res, next) {
+  if (FREE_MODE) return next(); // App gratuita por ahora
   try {
     const user = await User.findById(req.client.id);
     if (!user) return res.status(404).json({ error: 'Usuario no encontrado' });
@@ -371,6 +375,7 @@ app.get('/api/client/me', requireClient, async (req, res) => {
 // ── PAYMENT: STATUS ───────────────────────────────────────────────────────────
 app.get('/api/payment/status', requireClient, async (req, res) => {
   try {
+    if (FREE_MODE) return res.json({ freeMode: true, active: true, message: 'Acceso gratuito', status: 'active', daysLeft: 0 });
     const user = await User.findById(req.client.id);
     const now = new Date();
     let active = false, daysLeft = 0, message = '';
@@ -566,7 +571,7 @@ app.put('/api/client/products/:id', requireClient, requireSubscription, async (r
 app.delete('/api/client/products/:id', requireClient, requireSubscription, async (req, res) => {
   try {
     await Product.deleteOne({ _id: req.params.id, userId: req.client.id });
-    await Movement.deleteMany({ productId: req.params.id, userId: req.client.id });
+    // El historial de movimientos se conserva aunque el producto sea eliminado
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -655,32 +660,47 @@ app.get('/api/client/caja', requireClient, requireSubscription, async (req, res)
 // ── COMPRAS ───────────────────────────────────────────────────────────────────
 app.post('/api/client/compras', requireClient, requireSubscription, async (req, res) => {
   try {
-    const { productId, quantity, costPrice, note } = req.body;
-    if (!productId || !quantity) return res.status(400).json({ error: 'Datos incompletos' });
+    // Acepta tanto un objeto único como un array de items
+    const body = req.body;
+    const items = Array.isArray(body.items) ? body.items
+      : (body.productId ? [{ productId: body.productId, quantity: body.quantity, costPrice: body.costPrice, note: body.note }] : null);
 
-    const prod = await Product.findOne({ _id: productId, userId: req.client.id });
-    if (!prod) return res.status(404).json({ error: 'Producto no encontrado' });
+    if (!items || items.length === 0) return res.status(400).json({ error: 'Agregá al menos un producto' });
 
-    const qty = parseInt(quantity);
-    if (qty <= 0) return res.status(400).json({ error: 'La cantidad debe ser mayor a 0' });
-    const cost = parseFloat(costPrice) || 0;
-    const newStock = prod.stock + qty;
+    const results = [];
+    let totalAmount = 0;
 
-    const update = { stock: newStock };
-    if (cost > 0) update.costPrice = cost;
-    await Product.updateOne({ _id: productId }, { $set: update });
+    for (const item of items) {
+      const { productId, quantity, costPrice, note } = item;
+      if (!productId || !quantity) return res.status(400).json({ error: 'Datos incompletos en algún ítem' });
 
-    const mov = await Movement.create({
-      userId: req.client.id, productId,
-      productName: prod.name, category: prod.category || 'General',
-      type: 'compra', quantity: qty,
-      stockBefore: prod.stock, stockAfter: newStock,
-      costPrice: cost || prod.costPrice || 0,
-      totalAmount: qty * (cost || prod.costPrice || 0),
-      note: note || null
-    });
+      const prod = await Product.findOne({ _id: productId, userId: req.client.id });
+      if (!prod) return res.status(404).json({ error: `Producto no encontrado` });
 
-    res.status(201).json({ ...mov.toObject(), newStock });
+      const qty = parseInt(quantity);
+      if (qty <= 0) return res.status(400).json({ error: 'La cantidad debe ser mayor a 0' });
+      const cost = parseFloat(costPrice) || 0;
+      const newStock = prod.stock + qty;
+
+      const update = { stock: newStock };
+      if (cost > 0) update.costPrice = cost;
+      await Product.updateOne({ _id: productId }, { $set: update });
+
+      const mov = await Movement.create({
+        userId: req.client.id, productId,
+        productName: prod.name, category: prod.category || 'General',
+        type: 'compra', quantity: qty,
+        stockBefore: prod.stock, stockAfter: newStock,
+        costPrice: cost || prod.costPrice || 0,
+        totalAmount: qty * (cost || prod.costPrice || 0),
+        note: body.note || note || null
+      });
+
+      results.push({ ...mov.toObject(), newStock });
+      totalAmount += qty * (cost || prod.costPrice || 0);
+    }
+
+    res.status(201).json(results.length === 1 ? { ...results[0] } : { success: true, items: results, totalAmount });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 
