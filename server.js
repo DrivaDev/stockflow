@@ -164,15 +164,19 @@ app.post('/api/discount/validate', async (req, res) => {
 // ── REGISTRO CLIENTE ──────────────────────────────────────────────────────────
 app.post('/api/register', async (req, res) => {
   try {
-    const { name, email, phone, business_name, plan, discount_code, password } = req.body;
-    if (!name || !email || !plan) return res.status(400).json({ error: 'Nombre, email y plan son requeridos' });
+    const { name, email, phone, business_name, password,
+            plan: reqPlan, discount_code } = req.body; // plan y discount_code se ignoran en FREE_MODE
+    if (!name || !email) return res.status(400).json({ error: 'Nombre y email son requeridos' });
     if (!password || password.length < 6) return res.status(400).json({ error: 'La contraseña debe tener al menos 6 caracteres' });
-    if (!PLANS[plan]) return res.status(400).json({ error: 'Plan inválido' });
 
-    const basePrice = PLANS[plan].price;
+    // En FREE_MODE todos entran como pro activo y sin costo
+    const plan = FREE_MODE ? 'pro' : (reqPlan || 'basic');
+    if (!FREE_MODE && !PLANS[plan]) return res.status(400).json({ error: 'Plan inválido' });
+
+    const basePrice = FREE_MODE ? 0 : PLANS[plan].price;
     let finalPrice = basePrice, validatedCode = null;
 
-    if (discount_code) {
+    if (!FREE_MODE && discount_code) {
       const disc = await Discount.findOne({ code: discount_code.toUpperCase(), active: true });
       if (disc && (!disc.expiresAt || disc.expiresAt >= new Date()) &&
           (disc.maxUses === null || disc.currentUses < disc.maxUses) &&
@@ -185,10 +189,12 @@ app.post('/api/register', async (req, res) => {
       }
     }
 
-    // Suscripción: básico = 14 días de prueba, pro = pendiente de pago (3 días de gracia)
+    // En FREE_MODE la cuenta queda activa directamente
     const now = new Date();
     let subscriptionStatus, trialEndsAt = null;
-    if (plan === 'basic') {
+    if (FREE_MODE) {
+      subscriptionStatus = 'active';
+    } else if (plan === 'basic') {
       subscriptionStatus = 'trial';
       trialEndsAt = new Date(now.getTime() + 14 * 24 * 60 * 60 * 1000);
     } else {
@@ -535,11 +541,13 @@ app.get('/api/client/products', requireClient, requireSubscription, async (req, 
 
 app.post('/api/client/products', requireClient, requireSubscription, async (req, res) => {
   try {
-    const user = await User.findById(req.client.id);
-    const plan = PLANS[user.plan];
-    if (plan.products !== null) {
-      const count = await Product.countDocuments({ userId: req.client.id });
-      if (count >= plan.products) return res.status(403).json({ error: `Tu plan permite hasta ${plan.products} productos. Actualizá al Plan Pro para tener productos ilimitados.` });
+    if (!FREE_MODE) {
+      const user = await User.findById(req.client.id);
+      const plan = PLANS[user.plan];
+      if (plan.products !== null) {
+        const count = await Product.countDocuments({ userId: req.client.id });
+        if (count >= plan.products) return res.status(403).json({ error: `Tu plan permite hasta ${plan.products} productos. Actualizá al Plan Pro para tener productos ilimitados.` });
+      }
     }
     const { name, category, barcode, stock, minStock, costPrice, salePrice, unit, description, emoji } = req.body;
     if (!name) return res.status(400).json({ error: 'El nombre es requerido' });

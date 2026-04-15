@@ -9,139 +9,54 @@
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #EA580C; --primary-dark: #9A3412; --primary-light: #FFF7ED;
+      --primary: #EA580C; --primary-light: #FFF7ED;
       --success: #10B981; --error: #EF4444; --text: #1A1A2E;
-      --text-muted: #64748B; --border: #E2E8F0; --card: #FFFFFF;
+      --text-muted: #64748B; --border: #E2E8F0;
       --gradient: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
     }
     body { font-family: 'Inter', sans-serif; background: #fff7ed; color: var(--text); min-height: 100vh; display: flex; flex-direction: column; }
 
-    header {
-      background: #fff; border-bottom: 1px solid var(--border);
-      padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between;
-    }
+    header { background: #fff; border-bottom: 1px solid var(--border); padding: .85rem 2rem; display: flex; align-items: center; justify-content: space-between; }
     .logo { font-size: 1.3rem; font-weight: 800; color: var(--primary); text-decoration: none; }
     header a.back { color: var(--text-muted); font-size: .9rem; text-decoration: none; }
     header a.back:hover { color: var(--primary); }
 
     .page { flex: 1; display: flex; align-items: flex-start; justify-content: center; padding: 2.5rem 1.5rem; gap: 2rem; flex-wrap: wrap; }
 
-    /* LEFT: form */
-    .form-box {
-      background: #fff; border-radius: 20px; padding: 2.5rem;
-      box-shadow: 0 8px 30px rgba(0,0,0,.07);
-      width: 100%; max-width: 500px; flex-shrink: 0;
-    }
+    .form-box { background: #fff; border-radius: 20px; padding: 2.5rem; box-shadow: 0 8px 30px rgba(0,0,0,.07); width: 100%; max-width: 460px; flex-shrink: 0; }
     .form-box h1 { font-size: 1.55rem; font-weight: 800; margin-bottom: .35rem; }
     .form-box .sub { color: var(--text-muted); font-size: .92rem; margin-bottom: 2rem; }
 
-    /* Plan selector */
-    .plan-selector { display: grid; grid-template-columns: 1fr 1fr; gap: .75rem; margin-bottom: 1.75rem; }
-    .plan-opt { position: relative; }
-    .plan-opt input[type=radio] { position: absolute; opacity: 0; }
-    .plan-opt label {
-      display: block; padding: 1rem; border-radius: 12px;
-      border: 2px solid var(--border); cursor: pointer;
-      transition: all .2s; text-align: center;
-    }
-    .plan-opt input:checked + label { border-color: var(--primary); background: var(--primary-light); }
-    .plan-opt label .plan-name { font-weight: 700; font-size: .95rem; }
-    .plan-opt label .plan-price { font-size: 1.3rem; font-weight: 900; color: var(--primary); margin: .2rem 0; }
-    .plan-opt label .plan-detail { font-size: .75rem; color: var(--text-muted); }
-    .plan-badge {
-      position: absolute; top: -10px; left: 50%; transform: translateX(-50%);
-      background: var(--gradient); color: #fff;
-      padding: 2px 10px; border-radius: 100px; font-size: .7rem; font-weight: 700;
-      white-space: nowrap; pointer-events: none;
-    }
-
-    /* Form fields */
     .field { margin-bottom: 1.1rem; }
     .field label { display: block; font-size: .85rem; font-weight: 600; margin-bottom: .4rem; }
-    .field input {
-      width: 100%; padding: .7rem 1rem;
-      border: 1.5px solid var(--border); border-radius: 10px;
-      font-size: .95rem; font-family: inherit; color: var(--text);
-      transition: border-color .2s; background: #fff;
-    }
+    .field input { width: 100%; padding: .7rem 1rem; border: 1.5px solid var(--border); border-radius: 10px; font-size: .95rem; font-family: inherit; color: var(--text); transition: border-color .2s; }
     .field input:focus { outline: none; border-color: var(--primary); }
     .field .hint { font-size: .78rem; color: var(--text-muted); margin-top: .3rem; }
 
-    /* Discount */
-    .discount-row { display: flex; gap: .5rem; }
-    .discount-row input { flex: 1; }
-    .btn-apply {
-      padding: .7rem 1.1rem; background: var(--primary-light); color: var(--primary);
-      border: 1.5px solid var(--primary); border-radius: 10px;
-      font-weight: 600; font-size: .88rem; cursor: pointer; font-family: inherit;
-      transition: all .2s; white-space: nowrap;
-    }
-    .btn-apply:hover { background: var(--primary); color: #fff; }
-    .discount-result {
-      margin-top: .5rem; padding: .6rem .9rem; border-radius: 8px;
-      font-size: .85rem; font-weight: 500;
-      display: none;
-    }
-    .discount-result.ok { background: #D1FAE5; color: #059669; display: block; }
-    .discount-result.err { background: #FEE2E2; color: #DC2626; display: block; }
+    .err-msg { background: #FEE2E2; color: #DC2626; border-radius: 10px; padding: .7rem 1rem; font-size: .88rem; margin-bottom: 1rem; display: none; }
 
-    /* Summary */
-    .summary {
-      background: #f8f9ff; border: 1.5px solid var(--border);
-      border-radius: 12px; padding: 1.1rem 1.25rem; margin: 1.5rem 0;
-    }
-    .summary-row { display: flex; justify-content: space-between; font-size: .9rem; margin-bottom: .4rem; }
-    .summary-row:last-child { margin: 0; padding-top: .5rem; border-top: 1px solid var(--border); font-weight: 700; font-size: .98rem; }
-    .summary-row .label { color: var(--text-muted); }
-    .summary-row .val { font-weight: 600; }
-    .summary-row .val.discount { color: var(--success); }
-    .summary-row .val.total { color: var(--primary); font-size: 1.1rem; }
-
-    .btn-submit {
-      width: 100%; padding: .9rem; background: var(--gradient);
-      color: #fff; border: none; border-radius: 12px;
-      font-size: 1rem; font-weight: 700; cursor: pointer;
-      font-family: inherit; transition: all .2s;
-      box-shadow: 0 4px 14px rgba(234,88,12,.35);
-    }
+    .btn-submit { width: 100%; padding: .9rem; background: var(--gradient); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; transition: all .2s; box-shadow: 0 4px 14px rgba(234,88,12,.35); }
     .btn-submit:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234,88,12,.45); }
     .btn-submit:disabled { opacity: .6; cursor: not-allowed; transform: none; }
 
-    .terms { font-size: .78rem; color: var(--text-muted); text-align: center; margin-top: .9rem; }
-    .terms a { color: var(--primary); }
+    .spinner { display: none; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
+    @keyframes spin { to { transform: rotate(360deg); } }
 
-    /* Success screen */
-    .success-screen { display: none; text-align: center; padding: 1.5rem 0; }
-    .success-icon { width: 64px; height: 64px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .footer-link { text-align: center; margin-top: 1.25rem; font-size: .85rem; color: var(--text-muted); }
+    .footer-link a { color: var(--primary); font-weight: 600; text-decoration: none; }
+
+    /* Success */
+    .success-screen { display: none; text-align: center; padding: 1rem 0; }
+    .success-icon { width: 64px; height: 64px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; }
     .success-icon svg { width: 32px; height: 32px; stroke: #059669; stroke-width: 2.5; fill: none; }
     .success-screen h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: .5rem; }
-    .success-screen p { color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
-    .success-plan {
-      background: var(--primary-light); color: var(--primary);
-      display: inline-block; padding: .5rem 1.5rem; border-radius: 100px;
-      font-weight: 700; font-size: 1rem; margin-bottom: 1.5rem;
-    }
-    .btn-pay {
-      width: 100%; padding: .9rem; background: var(--gradient);
-      color: #fff; border: none; border-radius: 12px;
-      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
-      box-shadow: 0 4px 14px rgba(234,88,12,.35); transition: all .2s; margin-bottom: .75rem;
-    }
-    .btn-pay:hover { transform: translateY(-2px); }
-    .btn-pay:disabled { opacity: .6; cursor: not-allowed; transform: none; }
-    .btn-trial {
-      width: 100%; padding: .75rem; background: none;
-      color: var(--text-muted); border: 1.5px solid var(--border); border-radius: 12px;
-      font-size: .9rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s;
-    }
-    .btn-trial:hover { border-color: var(--primary); color: var(--primary); }
+    .success-screen p { color: var(--text-muted); margin-bottom: 1.5rem; line-height: 1.6; }
+    .btn-app { display: block; width: 100%; padding: .9rem; background: var(--gradient); color: #fff; border: none; border-radius: 12px; font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit; box-shadow: 0 4px 14px rgba(234,88,12,.35); transition: all .2s; text-decoration: none; text-align: center; }
+    .btn-app:hover { transform: translateY(-2px); }
 
-    /* RIGHT: info panel */
-    .info-panel { width: 100%; max-width: 320px; }
-    .info-card {
-      background: #fff; border-radius: 16px; padding: 1.75rem;
-      box-shadow: 0 4px 16px rgba(0,0,0,.06); margin-bottom: 1rem;
-    }
+    /* Info panel */
+    .info-panel { width: 100%; max-width: 300px; }
+    .info-card { background: #fff; border-radius: 16px; padding: 1.75rem; box-shadow: 0 4px 16px rgba(0,0,0,.06); margin-bottom: 1rem; }
     .info-card h4 { font-size: .95rem; font-weight: 700; margin-bottom: 1rem; }
     .info-item { display: flex; align-items: flex-start; gap: .75rem; margin-bottom: .9rem; }
     .info-item:last-child { margin: 0; }
@@ -149,11 +64,7 @@
     .info-item strong { display: block; font-size: .88rem; font-weight: 600; }
     .info-item span { font-size: .8rem; color: var(--text-muted); }
 
-    /* spinner */
-    .spinner { display: none; width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .6s linear infinite; margin: 0 auto; }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    @media (max-width: 600px) { .form-box { padding: 1.75rem 1.25rem; } .page { padding: 1.5rem 1rem; } }
+    @media (max-width: 600px) { .form-box { padding: 1.75rem 1.25rem; } .page { padding: 1.5rem 1rem; } .info-panel { display: none; } }
   </style>
 </head>
 <body>
@@ -164,34 +75,15 @@
 </header>
 
 <div class="page">
-  <!-- FORM BOX -->
   <div class="form-box">
+
+    <!-- FORM -->
     <div id="formContent">
-      <h1>Crear cuenta</h1>
+      <h1>Crear cuenta gratis</h1>
       <p class="sub">Completá tus datos y empezá a gestionar tu stock hoy mismo.</p>
 
-      <!-- Plan selector -->
-      <div class="plan-selector">
-        <div class="plan-opt">
-          <input type="radio" name="plan" id="planBasic" value="basic" />
-          <label for="planBasic">
-            <div class="plan-name">Básico</div>
-            <div class="plan-price">$30.000</div>
-            <div class="plan-detail">1 usuario · 500 productos</div>
-          </label>
-        </div>
-        <div class="plan-opt" style="position:relative">
-          <div class="plan-badge">⭐ Popular</div>
-          <input type="radio" name="plan" id="planPro" value="pro" />
-          <label for="planPro">
-            <div class="plan-name">Pro</div>
-            <div class="plan-price">$50.000</div>
-            <div class="plan-detail">5 usuarios · Ilimitados</div>
-          </label>
-        </div>
-      </div>
+      <div class="err-msg" id="errMsg"></div>
 
-      <!-- Datos personales -->
       <div class="field">
         <label for="name">Nombre completo *</label>
         <input type="text" id="name" placeholder="Ej: Juan García" />
@@ -209,33 +101,16 @@
         <input type="text" id="business" placeholder="Ej: Kiosco El Sol" />
       </div>
       <div class="field">
-        <label for="password">Contraseña para tu cuenta *</label>
-        <input type="password" id="password" placeholder="Mínimo 6 caracteres" />
-        <div class="hint">Con esta contraseña vas a ingresar al gestor de stock.</div>
-      </div>
-
-      <!-- Código descuento -->
-      <div class="field">
-        <label for="discount">Código de descuento (opcional)</label>
-        <div class="discount-row">
-          <input type="text" id="discount" placeholder="PROMO2024" style="text-transform:uppercase" />
-          <button class="btn-apply" onclick="applyDiscount()">Aplicar</button>
-        </div>
-        <div class="discount-result" id="discountResult"></div>
-      </div>
-
-      <!-- Resumen de pago -->
-      <div class="summary" id="summary">
-        <div class="summary-row"><span class="label">Plan seleccionado</span><span class="val" id="sumPlan">—</span></div>
-        <div class="summary-row" id="sumDiscountRow" style="display:none"><span class="label">Descuento</span><span class="val discount" id="sumDiscount">—</span></div>
-        <div class="summary-row"><span class="label">Total mensual</span><span class="val total" id="sumTotal">—</span></div>
+        <label for="password">Contraseña *</label>
+        <input type="password" id="password" placeholder="Mínimo 6 caracteres" onkeydown="if(event.key==='Enter')submitForm()" />
+        <div class="hint">Con esta contraseña vas a ingresar al sistema.</div>
       </div>
 
       <button class="btn-submit" id="btnSubmit" onclick="submitForm()">
-        <span id="btnText">Registrarme →</span>
+        <span id="btnText">Crear cuenta gratis →</span>
         <div class="spinner" id="spinner"></div>
       </button>
-      <p class="terms">Al registrarte aceptás los <a href="#">Términos y condiciones</a> y la <a href="#">Política de privacidad</a>.</p>
+      <div class="footer-link" style="margin-top:1.25rem">¿Ya tenés cuenta? <a href="/login">Ingresar</a></div>
     </div>
 
     <!-- SUCCESS -->
@@ -244,197 +119,80 @@
         <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
       </div>
       <h2>¡Cuenta creada!</h2>
-      <p>Tu cuenta fue creada correctamente. <span id="successMsg"></span></p>
-      <div class="success-plan" id="successPlan"></div>
-
-      <button class="btn-pay" id="btnPay" onclick="goToPayment()">
-        <span id="btnPayText">Realizar pago ahora</span>
-      </button>
-      <button class="btn-trial" id="btnTrial" onclick="goToApp()" style="display:none">
-        Empezar prueba gratuita de 14 días
-      </button>
-      <p style="font-size:.78rem;color:var(--text-muted);margin-top:1rem">
+      <p>Todo listo, <strong id="successName"></strong>. Tu cuenta está activa y lista para usar.</p>
+      <a class="btn-app" href="/app">Ir al gestor de stock →</a>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-top:1.25rem">
         ¿Tenés dudas? Escribinos a <a href="mailto:driva.devv@gmail.com" style="color:var(--primary)">driva.devv@gmail.com</a>
       </p>
     </div>
+
   </div>
 
   <!-- INFO PANEL -->
   <div class="info-panel">
     <div class="info-card">
       <h4>¿Por qué StockGestion?</h4>
-      <div class="info-item"><span class="info-icon">⚡</span><div><strong>Listo en minutos</strong><span>Sin instalaciones ni configuraciones complicadas.</span></div></div>
-      <div class="info-item"><span class="info-icon">🔒</span><div><strong>Tus datos seguros</strong><span>Backups automáticos diarios. Acceso protegido.</span></div></div>
+      <div class="info-item"><span class="info-icon">⚡</span><div><strong>Listo en minutos</strong><span>Sin instalaciones ni configuraciones.</span></div></div>
+      <div class="info-item"><span class="info-icon">🔒</span><div><strong>Tus datos seguros</strong><span>Acceso protegido con contraseña.</span></div></div>
       <div class="info-item"><span class="info-icon">📱</span><div><strong>Multidispositivo</strong><span>Celular, tablet o PC. Donde estés.</span></div></div>
-      <div class="info-item"><span class="info-icon">💬</span><div><strong>Soporte real</strong><span>Personas reales que te ayudan cuando lo necesitás.</span></div></div>
+      <div class="info-item"><span class="info-icon">📦</span><div><strong>Productos ilimitados</strong><span>Sin restricciones, cargá todo tu inventario.</span></div></div>
+      <div class="info-item"><span class="info-icon">💬</span><div><strong>Soporte real</strong><span>Personas reales que te ayudan.</span></div></div>
     </div>
     <div class="info-card" style="background:var(--gradient);color:#fff">
-      <h4 style="color:#fff">14 días gratis</h4>
-      <p style="font-size:.85rem;opacity:.9;margin-top:.5rem">Registrate hoy y probá StockGestion sin cargo durante los primeros 14 días con el Plan Básico.</p>
+      <h4 style="color:#fff">100% gratuito</h4>
+      <p style="font-size:.85rem;opacity:.9;margin-top:.5rem">Por ahora StockGestion es completamente gratis. Registrate y empezá a usarlo hoy sin pagar nada.</p>
     </div>
   </div>
 </div>
 
 <script>
-const PLANS = {
-  basic: { name: 'Plan Básico', price: 30000 },
-  pro:   { name: 'Plan Pro',    price: 50000 }
-};
-let selectedPlan = null;
-let discountData = null;
-
-// Pre-seleccionar plan desde URL
-const urlPlan = new URLSearchParams(location.search).get('plan');
-if (urlPlan && document.getElementById('plan' + urlPlan.charAt(0).toUpperCase() + urlPlan.slice(1))) {
-  document.getElementById('plan' + urlPlan.charAt(0).toUpperCase() + urlPlan.slice(1)).checked = true;
-  selectedPlan = urlPlan;
-  updateSummary();
-}
-
-document.querySelectorAll('input[name=plan]').forEach(r => {
-  r.addEventListener('change', () => {
-    selectedPlan = r.value;
-    discountData = null;
-    document.getElementById('discountResult').className = 'discount-result';
-    document.getElementById('discountResult').textContent = '';
-    updateSummary();
-  });
-});
-
-function fmt(n) { return '$' + n.toLocaleString('es-AR'); }
-
-function updateSummary() {
-  if (!selectedPlan) return;
-  const plan = PLANS[selectedPlan];
-  document.getElementById('sumPlan').textContent = plan.name;
-
-  const discRow = document.getElementById('sumDiscountRow');
-  if (discountData) {
-    const saved = plan.price - discountData.final_price;
-    discRow.style.display = 'flex';
-    document.getElementById('sumDiscount').textContent = '−' + fmt(saved);
-    document.getElementById('sumTotal').textContent = fmt(discountData.final_price) + '/mes';
-  } else {
-    discRow.style.display = 'none';
-    document.getElementById('sumTotal').textContent = fmt(plan.price) + '/mes';
-  }
-}
-
-async function applyDiscount() {
-  const code = document.getElementById('discount').value.trim();
-  const result = document.getElementById('discountResult');
-  if (!code) return;
-  if (!selectedPlan) { result.className = 'discount-result err'; result.textContent = 'Seleccioná un plan primero.'; return; }
-
-  result.className = 'discount-result'; result.textContent = 'Validando...';
-
-  try {
-    const res = await fetch('/api/discount/validate', {
-      method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ code, plan: selectedPlan })
-    });
-    const data = await res.json();
-    if (!res.ok) { result.className = 'discount-result err'; result.textContent = data.error; discountData = null; }
-    else {
-      discountData = data;
-      const saved = data.original_price - data.final_price;
-      result.className = 'discount-result ok';
-      result.textContent = `✓ ${data.description || 'Descuento aplicado'} — Ahorrás ${fmt(saved)}`;
-    }
-  } catch { result.className = 'discount-result err'; result.textContent = 'Error de conexión'; }
-  updateSummary();
-}
-
-let registeredToken = null;
-let registeredPlan = null;
-
 async function submitForm() {
-  const name = document.getElementById('name').value.trim();
-  const email = document.getElementById('email').value.trim();
-  const phone = document.getElementById('phone').value.trim();
+  const name     = document.getElementById('name').value.trim();
+  const email    = document.getElementById('email').value.trim();
+  const phone    = document.getElementById('phone').value.trim();
   const business = document.getElementById('business').value.trim();
   const password = document.getElementById('password').value;
-  const discountCode = document.getElementById('discount').value.trim();
+  const errEl    = document.getElementById('errMsg');
 
-  if (!name) { alert('Ingresá tu nombre.'); return; }
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { alert('Ingresá un email válido.'); return; }
-  if (!password || password.length < 6) { alert('La contraseña debe tener al menos 6 caracteres.'); return; }
-  if (!selectedPlan) { alert('Seleccioná un plan.'); return; }
+  errEl.style.display = 'none';
 
-  const btn = document.getElementById('btnSubmit');
-  const txt = document.getElementById('btnText');
+  if (!name) { showErr('Ingresá tu nombre.'); return; }
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showErr('Ingresá un email válido.'); return; }
+  if (!password || password.length < 6) { showErr('La contraseña debe tener al menos 6 caracteres.'); return; }
+
+  const btn  = document.getElementById('btnSubmit');
+  const txt  = document.getElementById('btnText');
   const spin = document.getElementById('spinner');
   btn.disabled = true; txt.style.display = 'none'; spin.style.display = 'block';
 
   try {
     const res = await fetch('/api/register', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ name, email, phone, business_name: business, plan: selectedPlan, password, discount_code: discountCode || undefined })
+      body: JSON.stringify({ name, email, phone, business_name: business, password })
     });
     const data = await res.json();
     if (!res.ok) {
-      alert(data.error || 'Error al registrarse.');
+      showErr(data.error || 'Error al registrarse.');
       btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
       return;
     }
 
-    // Guardar token para usarlo en el pago
-    registeredToken = data.token;
-    registeredPlan = data.plan;
-
-    // Guardar en localStorage para cuando vuelva del pago
     localStorage.setItem('sf_token', data.token);
-    localStorage.setItem('sf_user', JSON.stringify({
-      name: data.name, email: data.email,
-      plan: data.plan, businessName: data.businessName
-    }));
+    localStorage.setItem('sf_user', JSON.stringify({ name: data.name, email: data.email, plan: data.plan, businessName: data.businessName }));
 
-    // Mostrar pantalla de pago
+    document.getElementById('successName').textContent = data.name.split(' ')[0];
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
-    document.getElementById('successPlan').textContent = data.plan_name + ' — ' + fmt(data.final_price) + '/mes';
-
-    if (selectedPlan === 'basic') {
-      document.getElementById('successMsg').textContent = 'Podés pagar ahora o usar los 14 días gratuitos.';
-      document.getElementById('btnTrial').style.display = 'block';
-      document.getElementById('btnPayText').textContent = 'Pagar ahora';
-    } else {
-      document.getElementById('successMsg').textContent = 'Completá el pago para activar tu cuenta.';
-      document.getElementById('btnTrial').style.display = 'none';
-      document.getElementById('btnPayText').textContent = 'Realizar pago';
-    }
   } catch {
-    alert('Error de conexión. Intentá de nuevo.');
+    showErr('Error de conexión. Intentá de nuevo.');
     btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
   }
 }
 
-async function goToPayment() {
-  const btn = document.getElementById('btnPay');
-  btn.disabled = true;
-  document.getElementById('btnPayText').textContent = 'Redirigiendo...';
-  try {
-    const res = await fetch('/api/payment/create-preference', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + registeredToken }
-    });
-    const data = await res.json();
-    if (data.payment_url) {
-      window.location.href = data.payment_url;
-    } else {
-      alert(data.error || 'Error al generar el pago. Contactá al soporte.');
-      btn.disabled = false;
-      document.getElementById('btnPayText').textContent = 'Realizar pago ahora';
-    }
-  } catch {
-    alert('Error de conexión. Intentá nuevamente.');
-    btn.disabled = false;
-    document.getElementById('btnPayText').textContent = 'Realizar pago ahora';
-  }
-}
-
-function goToApp() {
-  location.href = '/app';
+function showErr(msg) {
+  const el = document.getElementById('errMsg');
+  el.textContent = msg;
+  el.style.display = 'block';
 }
 </script>
 </body>

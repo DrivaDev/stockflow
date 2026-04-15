@@ -258,7 +258,6 @@
   <div class="sidebar-logo">
     <div class="logo-text">Gestion<span>Stock</span></div>
     <div class="biz-name" id="bizName">Mi negocio</div>
-    <div class="plan-chip" id="planChip">Plan</div>
   </div>
   <nav class="sidebar-nav">
     <button class="nav-item active" onclick="showSection('dashboard')">
@@ -294,7 +293,6 @@
   <div class="topbar">
     <h1 id="pageTitle">Dashboard</h1>
     <div class="topbar-right">
-      <span id="subStatusBadge" style="font-size:.78rem;padding:.3rem .75rem;border-radius:100px;font-weight:600"></span>
       <span id="userName" style="font-size:.88rem;color:var(--text-muted)"></span>
     </div>
   </div>
@@ -717,7 +715,7 @@ if (!token) location.href = '/login';
 // Init UI
 document.getElementById('userName').textContent  = user.name || '';
 document.getElementById('bizName').textContent   = user.businessName || user.name || '';
-document.getElementById('planChip').textContent  = user.plan === 'pro' ? 'Plan Pro' : 'Plan Básico';
+// plan chip removido (app gratuita)
 
 // Set today's date on caja and ventas filters
 const todayStr = new Date().toISOString().split('T')[0];
@@ -749,22 +747,12 @@ async function checkSubscription() {
     if (!res.ok) return;
     const data = await res.json();
 
-    // Modo gratuito: el servidor devuelve active=true siempre → no mostrar pantalla de bloqueo
-    if (data.freeMode) return; // App gratuita, nada que mostrar
+    if (data.freeMode || data.active) return; // Gratis o activo: sin bloqueo
 
-    const badge = document.getElementById('subStatusBadge');
-    if (data.status === 'trial' && data.active) {
-      badge.textContent = `Prueba: ${data.daysLeft}d`;
-      badge.style.cssText = 'font-size:.78rem;padding:.3rem .75rem;border-radius:100px;font-weight:600;background:#FEF3C7;color:#92400E';
-    } else if (data.status === 'active' && data.active) {
-      badge.textContent = `Activo`;
-      badge.style.cssText = 'font-size:.78rem;padding:.3rem .75rem;border-radius:100px;font-weight:600;background:#D1FAE5;color:#065F46';
-    } else if (!data.active) {
-      badge.style.display = 'none';
-      document.getElementById('subscriptionMsg').textContent = data.message;
-      document.getElementById('subscriptionScreen').classList.add('show');
-      reIcons();
-    }
+    // Suscripción inactiva: mostrar pantalla de pago
+    document.getElementById('subscriptionMsg').textContent = data.message;
+    document.getElementById('subscriptionScreen').classList.add('show');
+    reIcons();
   } catch (e) { /* no bloquear si falla */ }
 }
 
