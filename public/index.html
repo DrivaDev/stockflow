@@ -1,13 +1,64 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" prefix="og: https://ogp.me/ns#">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StockGestion — Gestión de Stock Inteligente</title>
+
+  <!-- SEO primario -->
+  <title>StockGestion — Sistema de Gestión de Stock Gratis para Kioscos y Comercios</title>
+  <meta name="description" content="StockGestion es el sistema de gestión de inventario 100% gratuito para kioscos, almacenes y pequeños comercios. Controlá tu stock, registrá ventas y compras, y recibí alertas de stock bajo. Sin instalaciones, desde cualquier dispositivo." />
+  <meta name="keywords" content="gestión de stock, control de inventario, sistema de stock gratis, gestión de kiosco, control de stock almacén, inventario online gratis, gestor de productos, stock para comercios, gestión inventario Argentina" />
+  <meta name="author" content="Driva Dev" />
+  <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />
+  <link rel="canonical" href="https://stockflow-omega-seven.vercel.app/" />
+
+  <!-- Open Graph (Facebook, LinkedIn, WhatsApp) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://stockflow-omega-seven.vercel.app/" />
+  <meta property="og:title" content="StockGestion — Gestión de Stock Gratis para tu Negocio" />
+  <meta property="og:description" content="Controlá el inventario de tu kiosco o comercio gratis. Ventas, compras, alertas de stock bajo y estadísticas. Sin instalaciones, desde el celular." />
+  <meta property="og:image" content="https://stockflow-omega-seven.vercel.app/og-image.png" />
+  <meta property="og:locale" content="es_AR" />
+  <meta property="og:site_name" content="StockGestion" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="StockGestion — Gestión de Stock Gratis" />
+  <meta name="twitter:description" content="Sistema de inventario gratuito para kioscos y comercios. Controlá tu stock desde el celular." />
+  <meta name="twitter:image" content="https://stockflow-omega-seven.vercel.app/og-image.png" />
+
+  <!-- Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3Crect x='5' y='18' width='5' height='9' rx='1.5' fill='white'/%3E%3Crect x='13.5' y='12' width='5' height='15' rx='1.5' fill='white'/%3E%3Crect x='22' y='6' width='5' height='21' rx='1.5' fill='white'/%3E%3C/svg%3E" />
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3C/svg%3E" />
+
+  <!-- JSON-LD Structured Data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "SoftwareApplication",
+    "name": "StockGestion",
+    "description": "Sistema de gestión de stock e inventario gratuito para kioscos, almacenes y pequeños comercios. Registrá ventas, compras y controlá tu stock desde cualquier dispositivo.",
+    "applicationCategory": "BusinessApplication",
+    "operatingSystem": "Web",
+    "offers": {
+      "@type": "Offer",
+      "price": "0",
+      "priceCurrency": "ARS"
+    },
+    "featureList": ["Gestión de inventario", "Registro de ventas", "Registro de compras", "Alertas de stock bajo", "Estadísticas y reportes", "Acceso desde celular"],
+    "inLanguage": "es-AR",
+    "url": "https://stockflow-omega-seven.vercel.app/",
+    "author": {
+      "@type": "Organization",
+      "name": "Driva Dev"
+    }
+  }
+  </script>
+
   <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
-  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js" defer></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
@@ -136,10 +187,30 @@
     .free-banner { background: #D1FAE5; border: 1.5px solid #6EE7B7; border-radius: 14px; padding: 1rem 1.5rem; display: inline-flex; align-items: center; gap: .75rem; font-size: .95rem; font-weight: 600; color: #065F46; margin-bottom: 1.5rem; }
     .free-banner span { font-size: 1.2rem; }
 
+    /* MOBILE NAV */
+    .nav-hamburger { display: none; flex-direction: column; gap: 5px; background: none; border: none; cursor: pointer; padding: 4px; }
+    .nav-hamburger span { display: block; width: 22px; height: 2px; background: var(--text); border-radius: 2px; transition: all .25s; }
+    #mobileNav { display: none; position: fixed; top: 68px; left: 0; right: 0; background: #fff; border-bottom: 1px solid var(--border); padding: 1rem 1.5rem; z-index: 99; flex-direction: column; gap: .25rem; box-shadow: 0 8px 24px rgba(0,0,0,.08); }
+    #mobileNav.open { display: flex; }
+    #mobileNav a { padding: .75rem .5rem; color: var(--text); text-decoration: none; font-weight: 500; border-bottom: 1px solid var(--border); font-size: 1rem; }
+    #mobileNav a:last-child { border: none; }
+    #mobileNav .mobile-cta { color: var(--primary); font-weight: 700; }
+
     @media (max-width: 768px) {
       .hero-inner { grid-template-columns: 1fr; }
       .hero-visual { display: none; }
       nav .nav-links { display: none; }
+      .nav-hamburger { display: flex; }
+      nav .nav-links, nav .nav-actions { display: none; }
+    }
+    @media (max-width: 480px) {
+      .hero-stats { gap: 1rem; flex-wrap: wrap; }
+      .hero h1 { font-size: 2rem; }
+      .hero-cta { flex-direction: column; }
+      .hero-cta .btn { width: 100%; justify-content: center; }
+      .features-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: 1fr; }
+      .testi-grid { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -165,7 +236,17 @@
     <a href="/login" class="btn btn-outline">Ingresar</a>
     <a href="/registro" class="btn btn-primary">Registrarme gratis</a>
   </div>
+  <button class="nav-hamburger" id="navHamburger" onclick="toggleMobileNav()" aria-label="Menú">
+    <span></span><span></span><span></span>
+  </button>
 </nav>
+<div id="mobileNav">
+  <a href="#features" onclick="closeMobileNav()">Características</a>
+  <a href="#como-funciona" onclick="closeMobileNav()">Cómo funciona</a>
+  <a href="#faq" onclick="closeMobileNav()">FAQ</a>
+  <a href="/login" onclick="closeMobileNav()">Ingresar</a>
+  <a href="/registro" class="mobile-cta" onclick="closeMobileNav()">Registrarme gratis</a>
+</div>
 
 <section class="hero">
   <div class="hero-inner">
@@ -355,6 +436,12 @@
       a.style.color = a.getAttribute('href') === '#' + current ? 'var(--primary)' : '';
     });
   });
+  function toggleMobileNav() {
+    document.getElementById('mobileNav').classList.toggle('open');
+  }
+  function closeMobileNav() {
+    document.getElementById('mobileNav').classList.remove('open');
+  }
 </script>
 </body>
 </html>
