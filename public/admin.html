@@ -128,8 +128,9 @@
     .action-btn {
       padding: 4px 10px; border-radius: 6px; font-size: .78rem; font-weight: 600;
       border: 1.5px solid; cursor: pointer; font-family: inherit; transition: all .15s;
-      background: none; margin-right: 8px;
+      background: none; display: block; margin-bottom: 5px;
     }
+    .action-btn:last-child { margin-bottom: 0; }
     .btn-edit { border-color: var(--primary); color: var(--primary); }
     .btn-edit:hover { background: var(--primary-light); }
     .btn-delete { border-color: var(--danger); color: var(--danger); }
@@ -310,6 +311,21 @@
         </select>
       </div>
     </div>
+    <div class="m-row">
+      <div class="m-field"><label>Suscripción</label>
+        <select id="editSubStatus">
+          <option value="">Sin cambiar</option>
+          <option value="trial">Prueba</option>
+          <option value="active">Activa</option>
+          <option value="suspended">Suspendida</option>
+          <option value="pending">Pendiente pago</option>
+          <option value="cancelled">Cancelada</option>
+        </select>
+      </div>
+      <div class="m-field"><label>Pago activo hasta</label>
+        <input type="date" id="editPaidUntil" />
+      </div>
+    </div>
     <div class="m-field"><label>Notas internas</label><textarea id="editNotes" placeholder="Notas visibles solo para el admin..."></textarea></div>
     <div class="modal-actions">
       <button class="btn btn-ghost" onclick="closeModal('editUserModal')">Cancelar</button>
@@ -466,6 +482,8 @@ function openEditUser(u) {
   document.getElementById('editUserId').value = u.id;
   document.getElementById('editPlan').value = '';
   document.getElementById('editStatus').value = u.status;
+  document.getElementById('editSubStatus').value = '';
+  document.getElementById('editPaidUntil').value = u.paid_until ? u.paid_until.split('T')[0] : '';
   document.getElementById('editNotes').value = u.notes || '';
   document.getElementById('editUserModal').classList.add('open');
 }
@@ -478,6 +496,10 @@ async function saveUser() {
   };
   const plan = document.getElementById('editPlan').value;
   if (plan) body.plan = plan;
+  const subStatus = document.getElementById('editSubStatus').value;
+  if (subStatus) body.subscriptionStatus = subStatus;
+  const paidUntil = document.getElementById('editPaidUntil').value;
+  if (paidUntil) body.paidUntil = paidUntil;
 
   await fetch('/api/admin/users/' + id, { method: 'PATCH', headers: authHeaders(), body: JSON.stringify(body) });
   closeModal('editUserModal');

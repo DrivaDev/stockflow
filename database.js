@@ -5,17 +5,21 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/stockf
 
 // ── SCHEMAS ───────────────────────────────────────────────────────────────────
 const userSchema = new mongoose.Schema({
-  name:          { type: String, required: true },
-  email:         { type: String, required: true, unique: true, lowercase: true, trim: true },
-  password:      { type: String },
-  phone:         { type: String, default: null },
-  businessName:  { type: String, default: null },
-  plan:          { type: String, enum: ['basic', 'pro'], required: true },
-  status:        { type: String, enum: ['active', 'inactive', 'pending'], default: 'active' },
-  discountCode:  { type: String, default: null },
-  originalPrice: { type: Number, required: true },
-  finalPrice:    { type: Number, required: true },
-  notes:         { type: String, default: null },
+  name:               { type: String, required: true },
+  email:              { type: String, required: true, unique: true, lowercase: true, trim: true },
+  password:           { type: String },
+  phone:              { type: String, default: null },
+  businessName:       { type: String, default: null },
+  plan:               { type: String, enum: ['basic', 'pro'], required: true },
+  status:             { type: String, enum: ['active', 'inactive', 'pending'], default: 'active' },
+  subscriptionStatus: { type: String, enum: ['trial', 'active', 'suspended', 'pending', 'cancelled'], default: 'trial' },
+  trialEndsAt:        { type: Date, default: null },
+  paidUntil:          { type: Date, default: null },
+  dataDeleteAt:       { type: Date, default: null },
+  discountCode:       { type: String, default: null },
+  originalPrice:      { type: Number, required: true },
+  finalPrice:         { type: Number, required: true },
+  notes:              { type: String, default: null },
 }, { timestamps: true });
 
 const adminSchema = new mongoose.Schema({
@@ -49,14 +53,19 @@ const productSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 const movementSchema = new mongoose.Schema({
-  userId:      { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-  productId:   { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
-  productName: { type: String },
-  type:        { type: String, enum: ['in', 'out', 'adjustment'], required: true },
-  quantity:    { type: Number, required: true },
-  stockBefore: { type: Number },
-  stockAfter:  { type: Number },
-  note:        { type: String, default: null },
+  userId:        { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  productId:     { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+  productName:   { type: String },
+  category:      { type: String, default: 'General' },
+  type:          { type: String, enum: ['in', 'out', 'adjustment', 'venta', 'compra'], required: true },
+  quantity:      { type: Number, required: true },
+  stockBefore:   { type: Number },
+  stockAfter:    { type: Number },
+  unitPrice:     { type: Number, default: 0 },
+  costPrice:     { type: Number, default: 0 },
+  totalAmount:   { type: Number, default: 0 },
+  paymentMethod: { type: String, default: null },
+  note:          { type: String, default: null },
 }, { timestamps: true });
 
 // ── MODELS ────────────────────────────────────────────────────────────────────
