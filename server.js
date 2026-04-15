@@ -41,7 +41,7 @@ async function sendEmail(to, subject, html) {
       auth: { user: process.env.GMAIL_USER, pass: process.env.GMAIL_PASS }
     });
     await mailer.sendMail({
-      from: `"GestionStock" <${process.env.GMAIL_USER}>`,
+      from: `"StockGestion" <${process.env.GMAIL_USER}>`,
       to, subject, html
     });
     console.log('Email enviado a:', to);
@@ -205,10 +205,10 @@ app.post('/api/register', async (req, res) => {
         ? `<tr><td style="padding:.4rem 0;color:#64748B">Período de prueba</td><td style="font-weight:600">14 días gratuitos</td></tr>`
         : `<tr><td style="padding:.4rem 0;color:#64748B">Estado</td><td style="font-weight:600;color:#EA580C">Pendiente de pago</td></tr>`;
 
-      sendEmail(email, '¡Bienvenido a GestionStock!', `
+      sendEmail(email, '¡Bienvenido a StockGestion!', `
         <div style="font-family:Inter,Arial,sans-serif;max-width:520px;margin:0 auto;padding:2rem;color:#1A1A2E">
           <div style="background:linear-gradient(135deg,#EA580C,#F97316);border-radius:14px;padding:2rem;text-align:center;margin-bottom:2rem">
-            <h1 style="color:#fff;margin:0;font-size:1.6rem">GestionStock</h1>
+            <h1 style="color:#fff;margin:0;font-size:1.6rem">StockGestion</h1>
             <p style="color:rgba(255,255,255,.85);margin:.5rem 0 0">Sistema de gestión de stock</p>
           </div>
           <h2 style="color:#EA580C">¡Hola ${name}!</h2>
@@ -225,12 +225,20 @@ app.post('/api/register', async (req, res) => {
         </div>
       `);
 
+      // Generar token para que el frontend pueda llamar al endpoint de pago inmediatamente
+      const token = jwt.sign({ id: user._id, email: user.email, plan: user.plan }, CLIENT_SECRET, { expiresIn: '24h' });
+
       res.status(201).json({
         id: user._id,
+        token,
+        name: user.name,
+        email: user.email,
+        plan: user.plan,
+        businessName: user.businessName,
         message: plan === 'basic'
           ? '¡Registro exitoso! Tenés 14 días de prueba gratuita.'
           : '¡Registro exitoso! Completá el pago para activar tu cuenta.',
-        plan: PLANS[plan].name,
+        plan_name: PLANS[plan].name,
         final_price: finalPrice,
         subscription_status: subscriptionStatus
       });
@@ -432,7 +440,7 @@ app.post('/api/payment/create-preference', requireClient, async (req, res) => {
     const result = await preferenceApi.create({
       body: {
         items: [{
-          title: `GestionStock - ${plan.name} (mensual)`,
+          title: `StockGestion - ${plan.name} (mensual)`,
           quantity: 1,
           unit_price: amount,
           currency_id: 'ARS'
@@ -446,7 +454,7 @@ app.post('/api/payment/create-preference', requireClient, async (req, res) => {
         auto_return: 'approved',
         external_reference: user._id.toString(),
         notification_url: `${appUrl}/api/payment/webhook`,
-        statement_descriptor: 'GestionStock'
+        statement_descriptor: 'StockGestion'
       }
     });
 
@@ -480,7 +488,7 @@ app.post('/api/payment/webhook', async (req, res) => {
 
         const user = await User.findById(userId);
         if (user) {
-          sendEmail(user.email, 'Pago confirmado - GestionStock', `
+          sendEmail(user.email, 'Pago confirmado - StockGestion', `
             <div style="font-family:Inter,Arial,sans-serif;max-width:520px;margin:0 auto;padding:2rem;color:#1A1A2E">
               <h2 style="color:#10B981">Pago confirmado</h2>
               <p>Hola ${user.name}, tu pago fue procesado correctamente.</p>
@@ -803,7 +811,7 @@ app.get('/login',    (req, res) => res.sendFile(path.join(__dirname, 'public', '
 if (require.main === module) {
   init().then(() => {
     app.listen(PORT, () => {
-      console.log(`\nGestionStock en http://localhost:${PORT}`);
+      console.log(`\nStockGestion en http://localhost:${PORT}`);
       console.log(`Admin: http://localhost:${PORT}/admin`);
       console.log(`   Usuario: JuanMSilva | Contrasena: JuamiAdmin12-\n`);
     });

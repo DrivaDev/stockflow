@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Registrarse — GestionStock</title>
+  <title>Registrarse — StockGestion</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3Crect x='5' y='18' width='5' height='9' rx='1.5' fill='white'/%3E%3Crect x='13.5' y='12' width='5' height='15' rx='1.5' fill='white'/%3E%3Crect x='22' y='6' width='5' height='21' rx='1.5' fill='white'/%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
@@ -111,17 +111,30 @@
     .terms a { color: var(--primary); }
 
     /* Success screen */
-    .success-screen {
-      display: none; text-align: center; padding: 2rem 0;
-    }
-    .success-icon { font-size: 4rem; margin-bottom: 1rem; }
+    .success-screen { display: none; text-align: center; padding: 1.5rem 0; }
+    .success-icon { width: 64px; height: 64px; background: #D1FAE5; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1rem; }
+    .success-icon svg { width: 32px; height: 32px; stroke: #059669; stroke-width: 2.5; fill: none; }
     .success-screen h2 { font-size: 1.5rem; font-weight: 800; margin-bottom: .5rem; }
-    .success-screen p { color: var(--text-muted); margin-bottom: 1.5rem; }
+    .success-screen p { color: var(--text-muted); margin-bottom: 1.25rem; line-height: 1.6; }
     .success-plan {
       background: var(--primary-light); color: var(--primary);
       display: inline-block; padding: .5rem 1.5rem; border-radius: 100px;
       font-weight: 700; font-size: 1rem; margin-bottom: 1.5rem;
     }
+    .btn-pay {
+      width: 100%; padding: .9rem; background: var(--gradient);
+      color: #fff; border: none; border-radius: 12px;
+      font-size: 1rem; font-weight: 700; cursor: pointer; font-family: inherit;
+      box-shadow: 0 4px 14px rgba(234,88,12,.35); transition: all .2s; margin-bottom: .75rem;
+    }
+    .btn-pay:hover { transform: translateY(-2px); }
+    .btn-pay:disabled { opacity: .6; cursor: not-allowed; transform: none; }
+    .btn-trial {
+      width: 100%; padding: .75rem; background: none;
+      color: var(--text-muted); border: 1.5px solid var(--border); border-radius: 12px;
+      font-size: .9rem; font-weight: 600; cursor: pointer; font-family: inherit; transition: all .2s;
+    }
+    .btn-trial:hover { border-color: var(--primary); color: var(--primary); }
 
     /* RIGHT: info panel */
     .info-panel { width: 100%; max-width: 320px; }
@@ -146,7 +159,7 @@
 <body>
 
 <header>
-  <a class="logo" href="/">GestionStock</a>
+  <a class="logo" href="/">StockGestion</a>
   <a class="back" href="/">← Volver al inicio</a>
 </header>
 
@@ -227,28 +240,37 @@
 
     <!-- SUCCESS -->
     <div class="success-screen" id="successScreen">
-      <div class="success-icon">🎉</div>
-      <h2>¡Registro exitoso!</h2>
-      <p>Te enviamos un email de confirmación. En breve nos comunicamos para activar tu cuenta.</p>
+      <div class="success-icon">
+        <svg viewBox="0 0 24 24"><polyline points="20 6 9 17 4 12"></polyline></svg>
+      </div>
+      <h2>¡Cuenta creada!</h2>
+      <p>Tu cuenta fue creada correctamente. <span id="successMsg"></span></p>
       <div class="success-plan" id="successPlan"></div>
-      <p style="font-size:.88rem; color:var(--text-muted)">¿Tenés dudas? Escribinos por WhatsApp y te ayudamos.</p>
-      <br>
-      <a href="/" style="color:var(--primary);font-weight:600;text-decoration:none">← Volver al inicio</a>
+
+      <button class="btn-pay" id="btnPay" onclick="goToPayment()">
+        <span id="btnPayText">Realizar pago ahora</span>
+      </button>
+      <button class="btn-trial" id="btnTrial" onclick="goToApp()" style="display:none">
+        Empezar prueba gratuita de 14 días
+      </button>
+      <p style="font-size:.78rem;color:var(--text-muted);margin-top:1rem">
+        ¿Tenés dudas? Escribinos a <a href="mailto:driva.devv@gmail.com" style="color:var(--primary)">driva.devv@gmail.com</a>
+      </p>
     </div>
   </div>
 
   <!-- INFO PANEL -->
   <div class="info-panel">
     <div class="info-card">
-      <h4>¿Por qué GestionStock?</h4>
+      <h4>¿Por qué StockGestion?</h4>
       <div class="info-item"><span class="info-icon">⚡</span><div><strong>Listo en minutos</strong><span>Sin instalaciones ni configuraciones complicadas.</span></div></div>
       <div class="info-item"><span class="info-icon">🔒</span><div><strong>Tus datos seguros</strong><span>Backups automáticos diarios. Acceso protegido.</span></div></div>
       <div class="info-item"><span class="info-icon">📱</span><div><strong>Multidispositivo</strong><span>Celular, tablet o PC. Donde estés.</span></div></div>
       <div class="info-item"><span class="info-icon">💬</span><div><strong>Soporte real</strong><span>Personas reales que te ayudan cuando lo necesitás.</span></div></div>
     </div>
-    <div class="info-card" style="background:linear-gradient(135deg,#6C63FF,#9C78FF);color:#fff">
-      <h4 style="color:#fff">Primer mes gratis</h4>
-      <p style="font-size:.85rem;opacity:.9;margin-top:.5rem">Registrate hoy y probá GestionStock sin cargo durante los primeros 30 días. Sin tarjeta de crédito.</p>
+    <div class="info-card" style="background:var(--gradient);color:#fff">
+      <h4 style="color:#fff">14 días gratis</h4>
+      <p style="font-size:.85rem;opacity:.9;margin-top:.5rem">Registrate hoy y probá StockGestion sin cargo durante los primeros 14 días con el Plan Básico.</p>
     </div>
   </div>
 </div>
@@ -323,6 +345,9 @@ async function applyDiscount() {
   updateSummary();
 }
 
+let registeredToken = null;
+let registeredPlan = null;
+
 async function submitForm() {
   const name = document.getElementById('name').value.trim();
   const email = document.getElementById('email').value.trim();
@@ -347,16 +372,69 @@ async function submitForm() {
       body: JSON.stringify({ name, email, phone, business_name: business, plan: selectedPlan, password, discount_code: discountCode || undefined })
     });
     const data = await res.json();
-    if (!res.ok) { alert(data.error || 'Error al registrarse.'); btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none'; return; }
+    if (!res.ok) {
+      alert(data.error || 'Error al registrarse.');
+      btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
+      return;
+    }
 
+    // Guardar token para usarlo en el pago
+    registeredToken = data.token;
+    registeredPlan = data.plan;
+
+    // Guardar en localStorage para cuando vuelva del pago
+    localStorage.setItem('sf_token', data.token);
+    localStorage.setItem('sf_user', JSON.stringify({
+      name: data.name, email: data.email,
+      plan: data.plan, businessName: data.businessName
+    }));
+
+    // Mostrar pantalla de pago
     document.getElementById('formContent').style.display = 'none';
     document.getElementById('successScreen').style.display = 'block';
-    const fp = data.final_price;
-    document.getElementById('successPlan').textContent = data.plan + ' — ' + fmt(fp) + '/mes';
+    document.getElementById('successPlan').textContent = data.plan_name + ' — ' + fmt(data.final_price) + '/mes';
+
+    if (selectedPlan === 'basic') {
+      document.getElementById('successMsg').textContent = 'Podés pagar ahora o usar los 14 días gratuitos.';
+      document.getElementById('btnTrial').style.display = 'block';
+      document.getElementById('btnPayText').textContent = 'Pagar ahora';
+    } else {
+      document.getElementById('successMsg').textContent = 'Completá el pago para activar tu cuenta.';
+      document.getElementById('btnTrial').style.display = 'none';
+      document.getElementById('btnPayText').textContent = 'Realizar pago';
+    }
   } catch {
     alert('Error de conexión. Intentá de nuevo.');
     btn.disabled = false; txt.style.display = 'inline'; spin.style.display = 'none';
   }
+}
+
+async function goToPayment() {
+  const btn = document.getElementById('btnPay');
+  btn.disabled = true;
+  document.getElementById('btnPayText').textContent = 'Redirigiendo...';
+  try {
+    const res = await fetch('/api/payment/create-preference', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + registeredToken }
+    });
+    const data = await res.json();
+    if (data.payment_url) {
+      window.location.href = data.payment_url;
+    } else {
+      alert(data.error || 'Error al generar el pago. Contactá al soporte.');
+      btn.disabled = false;
+      document.getElementById('btnPayText').textContent = 'Realizar pago ahora';
+    }
+  } catch {
+    alert('Error de conexión. Intentá nuevamente.');
+    btn.disabled = false;
+    document.getElementById('btnPayText').textContent = 'Realizar pago ahora';
+  }
+}
+
+function goToApp() {
+  location.href = '/app';
 }
 </script>
 </body>

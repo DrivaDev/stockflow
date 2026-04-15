@@ -1,7 +1,7 @@
 {
   "name": "stockflow",
   "version": "1.0.0",
-  "description": "Sistema de gestión de stock - Landing page con planes",
+  "description": "Sistema de StockGestion - Landing page con planes",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
