@@ -20,24 +20,14 @@
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
 
     /* NAV */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--border); padding: 0 2rem;
-      height: 68px; display: flex; align-items: center; justify-content: space-between;
-    }
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(255,255,255,0.95); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); padding: 0 2rem; height: 68px; display: flex; align-items: center; justify-content: space-between; }
     .nav-logo { display: flex; align-items: center; gap: 10px; font-size: 1.4rem; font-weight: 800; color: var(--primary); text-decoration: none; }
     .nav-logo svg { width: 32px; height: 32px; }
     .nav-links { display: flex; align-items: center; gap: 2rem; }
     .nav-links a { color: var(--text-muted); text-decoration: none; font-weight: 500; transition: color .2s; }
     .nav-links a:hover { color: var(--primary); }
     .nav-actions { display: flex; align-items: center; gap: .6rem; }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: .65rem 1.5rem; border-radius: 10px; font-weight: 600;
-      font-size: .95rem; cursor: pointer; text-decoration: none;
-      transition: all .2s; border: none; font-family: inherit;
-    }
+    .btn { display: inline-flex; align-items: center; gap: 8px; padding: .65rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: .95rem; cursor: pointer; text-decoration: none; transition: all .2s; border: none; font-family: inherit; }
     .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(234,88,12,.35); }
     .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234,88,12,.45); }
     .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
@@ -45,16 +35,11 @@
     .btn-lg { padding: .85rem 2.2rem; font-size: 1.05rem; border-radius: 12px; }
 
     /* HERO */
-    .hero {
-      min-height: 100vh; display: flex; align-items: center;
-      padding: 100px 2rem 4rem;
-      background: linear-gradient(160deg, #fffbf5 0%, #fff7ed 60%, #fffbf5 100%);
-      position: relative; overflow: hidden;
-    }
+    .hero { min-height: 100vh; display: flex; align-items: center; padding: 100px 2rem 4rem; background: linear-gradient(160deg, #fffbf5 0%, #fff7ed 60%, #fffbf5 100%); position: relative; overflow: hidden; }
     .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(234,88,12,.12) 0%, transparent 70%); border-radius: 50%; }
     .hero::after  { content: ''; position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,101,132,.08) 0%, transparent 70%); border-radius: 50%; }
     .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
-    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--primary-light); color: var(--primary); padding: .4rem 1rem; border-radius: 100px; font-size: .85rem; font-weight: 600; margin-bottom: 1.5rem; }
+    .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: #D1FAE5; color: #065F46; padding: .4rem 1rem; border-radius: 100px; font-size: .85rem; font-weight: 700; margin-bottom: 1.5rem; }
     .hero-badge span { width: 8px; height: 8px; background: var(--success); border-radius: 50%; }
     .hero h1 { font-size: clamp(2.2rem, 4vw, 3.2rem); font-weight: 900; line-height: 1.15; margin-bottom: 1.25rem; }
     .hero h1 .highlight { background: var(--gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
@@ -110,25 +95,6 @@
     .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
     .step p { color: var(--text-muted); font-size: .9rem; }
 
-    /* PRICING */
-    #precios { background: #fff; }
-    .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 760px; margin: 0 auto; }
-    .pricing-card { border-radius: 20px; border: 2px solid var(--border); padding: 2.25rem; transition: all .25s; position: relative; }
-    .pricing-card.popular { border-color: var(--primary); box-shadow: 0 16px 48px rgba(234,88,12,.18); }
-    .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--gradient); color: #fff; padding: .3rem 1.1rem; border-radius: 100px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
-    .pricing-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .3rem; }
-    .pricing-card .plan-sub { color: var(--text-muted); font-size: .88rem; margin-bottom: 1.5rem; }
-    .plan-price { margin-bottom: 1.75rem; }
-    .plan-price .currency { font-size: 1.1rem; color: var(--text-muted); vertical-align: top; margin-top: 4px; display: inline-block; }
-    .plan-price .amount { font-size: 3rem; font-weight: 900; color: var(--text); line-height: 1; }
-    .plan-price .period { color: var(--text-muted); font-size: .9rem; margin-left: 4px; }
-    .plan-features { list-style: none; margin-bottom: 2rem; }
-    .plan-features li { padding: .55rem 0; border-bottom: 1px solid var(--border); font-size: .93rem; display: flex; align-items: center; gap: .65rem; }
-    .plan-features li:last-child { border: none; }
-    .plan-features li .check { color: var(--success); display: flex; flex-shrink: 0; }
-    .plan-features li .check svg { width: 16px; height: 16px; stroke-width: 2.5; }
-    .pricing-card .btn { width: 100%; justify-content: center; }
-
     /* TESTIMONIALS */
     #testimonios { background: var(--bg); }
     .testi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
@@ -166,6 +132,10 @@
     footer a { color: rgba(255,255,255,.5); text-decoration: none; margin: 0 .75rem; }
     footer a:hover { color: #fff; }
 
+    /* FREE BANNER */
+    .free-banner { background: #D1FAE5; border: 1.5px solid #6EE7B7; border-radius: 14px; padding: 1rem 1.5rem; display: inline-flex; align-items: center; gap: .75rem; font-size: .95rem; font-weight: 600; color: #065F46; margin-bottom: 1.5rem; }
+    .free-banner span { font-size: 1.2rem; }
+
     @media (max-width: 768px) {
       .hero-inner { grid-template-columns: 1fr; }
       .hero-visual { display: none; }
@@ -189,29 +159,28 @@
   <div class="nav-links">
     <a href="#features">Características</a>
     <a href="#como-funciona">Cómo funciona</a>
-    <a href="#precios">Precios</a>
     <a href="#faq">FAQ</a>
   </div>
   <div class="nav-actions">
     <a href="/login" class="btn btn-outline">Ingresar</a>
-    <a href="/registro" class="btn btn-primary">Empezar ahora</a>
+    <a href="/registro" class="btn btn-primary">Registrarme gratis</a>
   </div>
 </nav>
 
 <section class="hero">
   <div class="hero-inner">
     <div class="hero-content">
-      <div class="hero-badge"><span></span> Disponible desde hoy</div>
+      <div class="hero-badge"><span></span> 100% gratuito por tiempo limitado</div>
       <h1>El stock de tu negocio, <span class="highlight">siempre bajo control</span></h1>
-      <p>StockGestion es el sistema de gestión de inventario diseñado para kioscos, almacenes y pequeños comercios. Rápido, simple y pensado para vos.</p>
+      <p>StockGestion es el sistema de gestión de inventario diseñado para kioscos, almacenes y pequeños comercios. Rápido, simple y <strong>completamente gratis</strong> por ahora.</p>
       <div class="hero-cta">
-        <a href="/registro" class="btn btn-primary btn-lg">Comenzar gratis un mes</a>
-        <a href="#precios" class="btn btn-outline btn-lg">Ver planes</a>
+        <a href="/registro" class="btn btn-primary btn-lg">Crear cuenta gratis →</a>
+        <a href="#features" class="btn btn-outline btn-lg">Ver características</a>
       </div>
       <div class="hero-stats">
-        <div class="hero-stat"><strong>+500</strong><span>negocios activos</span></div>
-        <div class="hero-stat"><strong>99.9%</strong><span>tiempo online</span></div>
-        <div class="hero-stat"><strong>4.9★</strong><span>satisfacción</span></div>
+        <div class="hero-stat"><strong>$0</strong><span>costo de uso</span></div>
+        <div class="hero-stat"><strong>∞</strong><span>productos</span></div>
+        <div class="hero-stat"><strong>5 min</strong><span>para empezar</span></div>
       </div>
     </div>
     <div class="hero-visual">
@@ -229,11 +198,11 @@
         <table class="mock-table">
           <thead><tr><th>Producto</th><th>Stock</th><th>Estado</th></tr></thead>
           <tbody>
-            <tr><td>Coca-Cola 1.5L</td><td>24 un.</td><td><span class="badge badge-ok">OK</span></td></tr>
-            <tr><td>Alfajor Triple</td><td>8 un.</td><td><span class="badge badge-low">Bajo</span></td></tr>
-            <tr><td>Agua Mineral 500ml</td><td>0 un.</td><td><span class="badge badge-out">Sin stock</span></td></tr>
-            <tr><td>Chicles Mentos</td><td>60 un.</td><td><span class="badge badge-ok">OK</span></td></tr>
-            <tr><td>Galletitas Oreo</td><td>3 un.</td><td><span class="badge badge-low">Bajo</span></td></tr>
+            <tr><td>🥤 Coca-Cola 1.5L</td><td>24 un.</td><td><span class="badge badge-ok">OK</span></td></tr>
+            <tr><td>🍫 Alfajor Triple</td><td>8 un.</td><td><span class="badge badge-low">Bajo</span></td></tr>
+            <tr><td>💧 Agua 500ml</td><td>0 un.</td><td><span class="badge badge-out">Sin stock</span></td></tr>
+            <tr><td>🍬 Chicles Mentos</td><td>60 un.</td><td><span class="badge badge-ok">OK</span></td></tr>
+            <tr><td>🍪 Galletitas Oreo</td><td>3 un.</td><td><span class="badge badge-low">Bajo</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -250,7 +219,7 @@
       <div class="feature-card">
         <div class="feature-icon"><i data-lucide="package"></i></div>
         <h3>Gestión de productos</h3>
-        <p>Agregá, editá y organizá tus productos por categorías. Código de barras y precios en un clic.</p>
+        <p>Agregá, editá y organizá tus productos por categorías. Asignales emojis para identificarlos de un vistazo.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i data-lucide="bell"></i></div>
@@ -258,14 +227,14 @@
         <p>Recibí notificaciones automáticas cuando un producto esté por agotarse. Nunca más te quedás sin stock.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
-        <h3>Reportes en tiempo real</h3>
-        <p>Visualizá entradas, salidas y rotación de stock con claridad. Tomá decisiones con datos reales.</p>
+        <div class="feature-icon"><i data-lucide="shopping-cart"></i></div>
+        <h3>Ventas y compras</h3>
+        <p>Registrá ventas con múltiples productos en un solo movimiento. Carrito intuitivo con totales automáticos.</p>
       </div>
       <div class="feature-card">
-        <div class="feature-icon"><i data-lucide="users"></i></div>
-        <h3>Múltiples usuarios</h3>
-        <p>Con el Plan Pro podés tener hasta 5 empleados con acceso simultáneo y permisos diferenciados.</p>
+        <div class="feature-icon"><i data-lucide="bar-chart-2"></i></div>
+        <h3>Reportes en tiempo real</h3>
+        <p>Visualizá entradas, salidas y rotación de stock con claridad. Estadísticas de ventas, ganancias y más.</p>
       </div>
       <div class="feature-card">
         <div class="feature-icon"><i data-lucide="search"></i></div>
@@ -287,49 +256,10 @@
     <h2 class="section-title">Empezá en menos de 5 minutos</h2>
     <p class="section-sub">Sin instalaciones, sin configuraciones complicadas. Solo creá tu cuenta y empezá.</p>
     <div class="steps">
-      <div class="step"><div class="step-num">1</div><h3>Elegí tu plan</h3><p>Seleccioná el plan que mejor se adapta a tu negocio y completá el registro.</p></div>
-      <div class="step"><div class="step-num">2</div><h3>Cargá tus productos</h3><p>Cargá manualmente o escanear códigos de barras. Simple y rápido.</p></div>
-      <div class="step"><div class="step-num">3</div><h3>Controlá tu stock</h3><p>Registrá movimientos, consultá reportes y recibí alertas desde cualquier lugar.</p></div>
-      <div class="step"><div class="step-num">4</div><h3>Hacé crecer tu negocio</h3><p>Tomá mejores decisiones con datos reales. Reducí mermas y optimizá compras.</p></div>
-    </div>
-  </div>
-</section>
-
-<section id="precios">
-  <div class="container">
-    <div style="text-align:center"><span class="section-label">Planes y precios</span></div>
-    <h2 class="section-title">Elegí el plan para tu negocio</h2>
-    <p class="section-sub">Sin costos ocultos. Podés cancelar o cambiar de plan cuando quieras.</p>
-    <div class="pricing-grid">
-      <div class="pricing-card">
-        <h3>Plan Básico</h3>
-        <p class="plan-sub">Ideal para kioscos y negocios unipersonales</p>
-        <div class="plan-price"><span class="currency">$</span><span class="amount">30.000</span><span class="period">/mes</span></div>
-        <ul class="plan-features">
-          <li><span class="check"><i data-lucide="check"></i></span> 1 usuario</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Hasta 500 productos</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Alertas de stock bajo</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Reportes básicos</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Soporte por email</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Acceso desde cualquier dispositivo</li>
-        </ul>
-        <a href="/registro?plan=basic" class="btn btn-outline">Empezar con Básico</a>
-      </div>
-      <div class="pricing-card popular">
-        <div class="popular-badge">Más popular</div>
-        <h3>Plan Pro</h3>
-        <p class="plan-sub">Para negocios en crecimiento con equipo</p>
-        <div class="plan-price"><span class="currency">$</span><span class="amount">50.000</span><span class="period">/mes</span></div>
-        <ul class="plan-features">
-          <li><span class="check"><i data-lucide="check"></i></span> Hasta 5 usuarios</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Productos ilimitados</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Alertas de stock bajo</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Reportes avanzados + exportar</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Soporte prioritario (WhatsApp)</li>
-          <li><span class="check"><i data-lucide="check"></i></span> Permisos por usuario</li>
-        </ul>
-        <a href="/registro?plan=pro" class="btn btn-primary">Empezar con Pro</a>
-      </div>
+      <div class="step"><div class="step-num">1</div><h3>Creá tu cuenta</h3><p>Completá el formulario con tus datos básicos. Sin tarjeta de crédito, sin pagos.</p></div>
+      <div class="step"><div class="step-num">2</div><h3>Cargá tus productos</h3><p>Agregá tu inventario con nombre, precio y stock inicial. Simple y rápido.</p></div>
+      <div class="step"><div class="step-num">3</div><h3>Registrá movimientos</h3><p>Vendé y comprá con el carrito multi-producto. El stock se actualiza automáticamente.</p></div>
+      <div class="step"><div class="step-num">4</div><h3>Tomá mejores decisiones</h3><p>Usá los reportes y estadísticas para optimizar tu inventario y aumentar ganancias.</p></div>
     </div>
   </div>
 </section>
@@ -337,8 +267,8 @@
 <section id="testimonios">
   <div class="container">
     <div style="text-align:center"><span class="section-label">Testimonios</span></div>
-    <h2 class="section-title">Lo que dicen nuestros clientes</h2>
-    <p class="section-sub">Más de 500 negocios ya confían en StockGestion para gestionar su inventario.</p>
+    <h2 class="section-title">Lo que dicen nuestros usuarios</h2>
+    <p class="section-sub">Pequeños negocios que ya usan StockGestion para controlar su inventario.</p>
     <div class="testi-grid">
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
@@ -347,7 +277,7 @@
       </div>
       <div class="testi-card">
         <div class="testi-stars">★★★★★</div>
-        <p>"Tenemos 3 empleados y con el Plan Pro todos podemos cargar movimientos al mismo tiempo. Ahorré horas de trabajo."</p>
+        <p>"Empecé a usarlo la semana pasada y ya sé exactamente qué productos necesito reponer. Facilísimo."</p>
         <div class="testi-author"><div class="testi-avatar">RG</div><div><div class="testi-name">Roberto García</div><div class="testi-biz">Almacén Don Roberto, Rosario</div></div></div>
       </div>
       <div class="testi-card">
@@ -366,24 +296,24 @@
     <p class="section-sub">¿Tenés dudas? Acá respondemos las más comunes.</p>
     <div class="faq-list">
       <div class="faq-item">
+        <button class="faq-q">¿Es realmente gratis? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
+        <div class="faq-a"><p>Sí, por ahora StockGestion es completamente gratuito. Podés registrarte y usar todas las funciones sin pagar nada. En el futuro podría tener planes pagos, pero te avisaremos con anticipación.</p></div>
+      </div>
+      <div class="faq-item">
         <button class="faq-q">¿Necesito instalar algo? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
         <div class="faq-a"><p>No, StockGestion es 100% web. Funciona desde cualquier navegador en celular, tablet o computadora. Sin instalaciones ni actualizaciones manuales.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q">¿Puedo cambiar de plan en cualquier momento? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
-        <div class="faq-a"><p>Sí. Podés subir del Plan Básico al Pro cuando lo necesites y el ajuste se aplica al siguiente ciclo de facturación.</p></div>
+        <button class="faq-q">¿Mis datos están seguros? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
+        <div class="faq-a"><p>Sí. Tus datos se guardan de forma segura en la nube. El acceso está protegido con tu contraseña y solo vos podés ver la información de tu negocio.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q">¿Cómo funciona el pago? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
-        <div class="faq-a"><p>El pago es mensual. Una vez registrado te contactamos para coordinar la forma de pago (transferencia, Mercado Pago u otras). No hay permanencia mínima.</p></div>
+        <button class="faq-q">¿Cuántos productos puedo cargar? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
+        <div class="faq-a"><p>Sin límites. Podés cargar todos los productos que necesites.</p></div>
       </div>
       <div class="faq-item">
-        <button class="faq-q">¿Qué pasa con mis datos si cancelo? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
-        <div class="faq-a"><p>Podés exportar toda tu información en cualquier momento. Si cancelás, tus datos se conservan por 30 días para que puedas recuperarlos.</p></div>
-      </div>
-      <div class="faq-item">
-        <button class="faq-q">¿Tienen soporte técnico? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
-        <div class="faq-a"><p>El Plan Básico incluye soporte por email con respuesta en 24hs. El Plan Pro incluye soporte prioritario por WhatsApp con respuesta en menos de 2hs.</p></div>
+        <button class="faq-q">¿Tienen soporte? <span class="faq-icon"><i data-lucide="plus"></i></span></button>
+        <div class="faq-a"><p>Sí. Podés escribirnos a driva.devv@gmail.com y te respondemos a la brevedad.</p></div>
       </div>
     </div>
   </div>
@@ -392,8 +322,8 @@
 <div class="cta-section">
   <div class="container">
     <h2>¿Listo para tomar el control de tu stock?</h2>
-    <p>Sumáte a los negocios que ya confían en StockGestion. Primer mes bonificado.</p>
-    <a href="/registro" class="btn btn-white btn-lg">Registrarme ahora</a>
+    <p>Registrate gratis y empezá a gestionar tu inventario hoy mismo. Sin tarjeta, sin pagos.</p>
+    <a href="/registro" class="btn btn-white btn-lg">Crear cuenta gratis →</a>
   </div>
 </div>
 
@@ -401,7 +331,7 @@
   <div class="footer-logo">StockGestion</div>
   <p>Sistema de gestión de stock para pequeños y medianos negocios.</p>
   <br>
-  <p><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="#">Contacto</a></p>
+  <p><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="mailto:driva.devv@gmail.com">Contacto</a></p>
   <br>
   <p style="font-size:.78rem">© 2025 StockGestion. Todos los derechos reservados.</p>
   <p style="font-size:.78rem;margin-top:.6rem;color:rgba(255,255,255,.35);">Desarrollado por <a href="#" style="color:#EA580C;font-weight:600;">Driva Dev</a></p>
