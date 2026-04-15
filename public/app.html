@@ -210,6 +210,9 @@
     .sub-box h2 { font-size: 1.6rem; font-weight: 900; margin-bottom: .75rem; }
     .sub-box p { color: var(--text-muted); margin-bottom: 1.75rem; line-height: 1.6; }
 
+    @media (max-width: 900px) {
+      #sec-ventas > div:first-child { grid-template-columns: 1fr !important; }
+    }
     @media (max-width: 768px) {
       aside { display: none; }
       main { padding: 1rem; }
@@ -368,27 +371,31 @@
 
   <!-- ── VENTAS ── -->
   <div class="section" id="sec-ventas">
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:1.5rem;margin-bottom:1.5rem">
 
-      <!-- Nueva venta -->
+      <!-- Selector de productos -->
       <div class="card">
-        <div class="card-header"><h2>Nueva venta</h2></div>
-        <div class="card-body">
-          <div class="m-field">
-            <label>Producto *</label>
-            <select id="ventaProduct" onchange="onVentaProductChange()">
-              <option value="">Seleccioná un producto...</option>
+        <div class="card-header"><h2>Productos</h2></div>
+        <div class="card-body" style="padding-top:.75rem">
+          <div style="display:flex;gap:.5rem;margin-bottom:.75rem;flex-wrap:wrap">
+            <input class="filter-input" type="text" placeholder="Buscar..." id="ventaSearch" oninput="filterVentaProducts()" style="flex:1;min-width:120px" />
+            <select class="filter-select" id="ventaCatFilter" onchange="filterVentaProducts()" style="flex:1;min-width:120px">
+              <option value="">Todas las categorías</option>
             </select>
           </div>
-          <div class="m-row">
-            <div class="m-field">
-              <label>Cantidad *</label>
-              <input type="number" id="ventaQty" placeholder="1" min="1" oninput="updateVentaTotal()" />
-            </div>
-            <div class="m-field">
-              <label>Precio unitario ($) *</label>
-              <input type="number" id="ventaPrice" placeholder="0" min="0" step="0.01" oninput="updateVentaTotal()" />
-            </div>
+          <div id="ventaProductList" style="max-height:380px;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem"></div>
+        </div>
+      </div>
+
+      <!-- Carrito -->
+      <div class="card">
+        <div class="card-header">
+          <h2>Carrito</h2>
+          <span id="cartCount" style="font-size:.75rem;background:var(--primary-light);color:var(--primary);padding:2px 10px;border-radius:100px;font-weight:700">0 ítems</span>
+        </div>
+        <div class="card-body" style="display:flex;flex-direction:column;gap:.75rem">
+          <div id="cartItems" style="max-height:220px;overflow-y:auto;display:flex;flex-direction:column;gap:.4rem">
+            <div style="text-align:center;color:var(--text-muted);padding:2rem;font-size:.88rem">Agregá productos desde el panel</div>
           </div>
           <div class="m-field">
             <label>Método de pago *</label>
@@ -396,7 +403,7 @@
               <button class="pay-tab active" onclick="selectPayment('efectivo')">Efectivo</button>
               <button class="pay-tab" onclick="selectPayment('debito')">Débito</button>
               <button class="pay-tab" onclick="selectPayment('credito')">Crédito</button>
-              <button class="pay-tab" onclick="selectPayment('transferencia')">Transferencia</button>
+              <button class="pay-tab" onclick="selectPayment('transferencia')">Trans.</button>
             </div>
           </div>
           <div class="venta-total-box">
@@ -405,12 +412,11 @@
           </div>
           <div class="m-field">
             <label>Nota (opcional)</label>
-            <input type="text" id="ventaNote" placeholder="Ej: Venta mostrador, delivery..." />
+            <input type="text" id="ventaNote" placeholder="Ej: mostrador, delivery..." />
           </div>
           <button class="btn btn-primary" onclick="registrarVenta()" style="width:100%">
             <i data-lucide="check-circle"></i> Confirmar venta
           </button>
-          <div id="ventaStockInfo" style="font-size:.82rem;color:var(--text-muted);margin-top:.75rem;text-align:center"></div>
         </div>
       </div>
 
@@ -574,9 +580,15 @@
   <div class="modal">
     <h3 id="productModalTitle">Agregar producto</h3>
     <input type="hidden" id="productId" />
-    <div class="m-field">
-      <label>Nombre del producto *</label>
-      <input type="text" id="pName" placeholder="Ej: Coca-Cola 1.5L" />
+    <div class="m-row">
+      <div class="m-field" style="flex:0 0 80px">
+        <label>Emoji</label>
+        <input type="text" id="pEmoji" placeholder="🥤" maxlength="4" style="font-size:1.4rem;text-align:center;padding:.4rem" />
+      </div>
+      <div class="m-field">
+        <label>Nombre del producto *</label>
+        <input type="text" id="pName" placeholder="Ej: Coca-Cola 1.5L" />
+      </div>
     </div>
     <div class="m-row">
       <div class="m-field">
@@ -876,7 +888,7 @@ async function loadProducts() {
   document.getElementById('productsTable').innerHTML = prods.length
     ? prods.map(p => `
       <tr>
-        <td><div class="product-name">${esc(p.name)}</div>${p.barcode?`<div class="product-cat">${esc(p.barcode)}</div>`:''}</td>
+        <td><div class="product-name">${p.emoji ? `<span style="margin-right:4px">${p.emoji}</span>` : ''}${esc(p.name)}</div>${p.barcode?`<div class="product-cat">${esc(p.barcode)}</div>`:''}</td>
         <td><span style="background:var(--primary-light);color:var(--primary);padding:2px 8px;border-radius:6px;font-size:.75rem;font-weight:600">${esc(p.category)}</span></td>
         <td><span class="stock-num ${stockClass(p.stock,p.minStock)}">${p.stock}</span> ${esc(p.unit)} ${stockBadge(p.stock,p.minStock)}</td>
         <td>${p.minStock} ${esc(p.unit)}</td>
@@ -896,6 +908,7 @@ async function loadProducts() {
 async function openProductModal(prod = null) {
   document.getElementById('productModalTitle').textContent = prod ? 'Editar producto' : 'Agregar producto';
   document.getElementById('productId').value    = prod?._id || '';
+  document.getElementById('pEmoji').value       = prod?.emoji || '';
   document.getElementById('pName').value        = prod?.name || '';
   document.getElementById('pCategory').value    = prod?.category || '';
   document.getElementById('pUnit').value        = prod?.unit || 'unidad';
@@ -916,6 +929,7 @@ async function saveProduct() {
   const id = document.getElementById('productId').value;
   const body = {
     name: document.getElementById('pName').value.trim(),
+    emoji: document.getElementById('pEmoji').value.trim() || null,
     category: document.getElementById('pCategory').value.trim() || 'General',
     unit: document.getElementById('pUnit').value,
     minStock: document.getElementById('pMinStock').value,
@@ -962,27 +976,95 @@ async function saveAdjuste() {
 }
 
 // ── VENTAS ────────────────────────────────────────────────────────────────────
+let ventaCart = []; // [{ productId, name, emoji, unit, salePrice, stock, quantity }]
+let ventaProductsAll = [];
+
 async function loadVentasProducts() {
   const res = await fetch('/api/client/products', { headers: authH() });
   const { products: prods } = await res.json();
   allProducts = prods;
-  const sel = document.getElementById('ventaProduct');
-  sel.innerHTML = '<option value="">Seleccioná un producto...</option>' +
-    prods.map(p => `<option value="${p._id}" data-price="${p.salePrice}" data-stock="${p.stock}" data-unit="${esc(p.unit)}">${esc(p.name)} — Stock: ${p.stock} ${esc(p.unit)}</option>`).join('');
+  ventaProductsAll = prods;
+
+  // populate category filter
+  const cats = [...new Set(prods.map(p => p.category).filter(Boolean))];
+  const sel = document.getElementById('ventaCatFilter');
+  const cur = sel.value;
+  sel.innerHTML = '<option value="">Todas las categorías</option>' +
+    cats.map(c => `<option value="${esc(c)}" ${c===cur?'selected':''}>${esc(c)}</option>`).join('');
+
+  filterVentaProducts();
 }
 
-function onVentaProductChange() {
-  const opt = document.getElementById('ventaProduct').selectedOptions[0];
-  if (!opt || !opt.value) {
-    document.getElementById('ventaPrice').value = '';
-    document.getElementById('ventaStockInfo').textContent = '';
-    updateVentaTotal();
+function filterVentaProducts() {
+  const search = (document.getElementById('ventaSearch')?.value || '').toLowerCase();
+  const cat    = document.getElementById('ventaCatFilter')?.value || '';
+  let prods = ventaProductsAll;
+  if (search) prods = prods.filter(p => p.name.toLowerCase().includes(search) || (p.barcode||'').toLowerCase().includes(search));
+  if (cat)    prods = prods.filter(p => p.category === cat);
+
+  const container = document.getElementById('ventaProductList');
+  if (!prods.length) { container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:1.5rem;font-size:.85rem">Sin productos</div>'; return; }
+
+  container.innerHTML = prods.map(p => {
+    const inCart = ventaCart.find(i => i.productId === p._id);
+    const stockOk = p.stock > 0;
+    return `<div style="display:flex;align-items:center;justify-content:space-between;padding:.5rem .6rem;border-radius:8px;background:${inCart?'var(--primary-light)':'var(--bg)'};border:1.5px solid ${inCart?'var(--primary)':'transparent'}">
+      <div style="min-width:0;flex:1">
+        <div style="font-weight:600;font-size:.88rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${p.emoji?`<span>${p.emoji}</span> `:''}${esc(p.name)}</div>
+        <div style="font-size:.75rem;color:var(--text-muted)">${p.salePrice>0?fmt(p.salePrice):'Sin precio'} · Stock: ${p.stock} ${esc(p.unit)}</div>
+      </div>
+      <button onclick="addToCart('${p._id}')" class="btn btn-sm" style="flex-shrink:0;margin-left:.5rem;padding:.3rem .7rem;font-size:.8rem;background:${inCart?'var(--primary)':'var(--bg)'};color:${inCart?'#fff':'var(--text)'};border:1.5px solid ${inCart?'var(--primary)':'var(--border)'};${!stockOk?'opacity:.5;pointer-events:none':''}">${inCart?'✓ En carrito':'+ Agregar'}</button>
+    </div>`;
+  }).join('');
+}
+
+function addToCart(productId) {
+  const prod = ventaProductsAll.find(p => p._id === productId);
+  if (!prod) return;
+  if (ventaCart.find(i => i.productId === productId)) return;
+  ventaCart.push({ productId, name: prod.name, emoji: prod.emoji, unit: prod.unit, salePrice: prod.salePrice, stock: prod.stock, quantity: 1 });
+  renderCart();
+  filterVentaProducts();
+}
+
+function removeFromCart(productId) {
+  ventaCart = ventaCart.filter(i => i.productId !== productId);
+  renderCart();
+  filterVentaProducts();
+}
+
+function updateCartQty(productId, val) {
+  const item = ventaCart.find(i => i.productId === productId);
+  if (!item) return;
+  const qty = Math.max(1, parseInt(val) || 1);
+  item.quantity = Math.min(qty, item.stock);
+  renderCart();
+}
+
+function renderCart() {
+  const container = document.getElementById('cartItems');
+  document.getElementById('cartCount').textContent = `${ventaCart.length} ítem${ventaCart.length!==1?'s':''}`;
+
+  if (!ventaCart.length) {
+    container.innerHTML = '<div style="text-align:center;color:var(--text-muted);padding:2rem;font-size:.88rem">Agregá productos desde el panel</div>';
+    document.getElementById('ventaTotalDisplay').textContent = '$0';
     return;
   }
-  document.getElementById('ventaPrice').value = opt.dataset.price || '';
-  document.getElementById('ventaStockInfo').textContent =
-    `Stock disponible: ${opt.dataset.stock} ${opt.dataset.unit || 'unidad'}`;
-  updateVentaTotal();
+
+  container.innerHTML = ventaCart.map(item => `
+    <div style="display:flex;align-items:center;gap:.5rem;padding:.45rem .5rem;border-radius:8px;background:var(--bg)">
+      <div style="flex:1;min-width:0">
+        <div style="font-size:.85rem;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${item.emoji?`${item.emoji} `:''}${esc(item.name)}</div>
+        <div style="font-size:.73rem;color:var(--text-muted)">${item.salePrice>0?fmt(item.salePrice)+' c/u':'Sin precio'}</div>
+      </div>
+      <input type="number" min="1" max="${item.stock}" value="${item.quantity}" onchange="updateCartQty('${item.productId}',this.value)"
+        style="width:54px;padding:.3rem .4rem;border:1.5px solid var(--border);border-radius:6px;font-size:.85rem;text-align:center;font-family:inherit" />
+      <div style="font-size:.85rem;font-weight:700;min-width:60px;text-align:right">${fmt(item.salePrice*item.quantity)}</div>
+      <button onclick="removeFromCart('${item.productId}')" style="background:none;border:none;cursor:pointer;color:var(--danger);font-size:1rem;padding:2px 4px">✕</button>
+    </div>`).join('');
+
+  const total = ventaCart.reduce((s,i) => s + i.salePrice * i.quantity, 0);
+  document.getElementById('ventaTotalDisplay').textContent = fmt(total);
 }
 
 function selectPayment(method) {
@@ -993,37 +1075,24 @@ function selectPayment(method) {
   document.querySelectorAll('.pay-tab')[idx]?.classList.add('active');
 }
 
-function updateVentaTotal() {
-  const qty   = parseFloat(document.getElementById('ventaQty').value) || 0;
-  const price = parseFloat(document.getElementById('ventaPrice').value) || 0;
-  document.getElementById('ventaTotalDisplay').textContent = fmt(qty * price);
-}
-
 async function registrarVenta() {
-  const productId    = document.getElementById('ventaProduct').value;
-  const quantity     = document.getElementById('ventaQty').value;
-  const unitPrice    = document.getElementById('ventaPrice').value;
-  const note         = document.getElementById('ventaNote').value.trim();
-  if (!productId) { toast('Seleccioná un producto', 'error'); return; }
-  if (!quantity || parseInt(quantity) <= 0) { toast('Ingresá una cantidad válida', 'error'); return; }
-  if (!unitPrice || parseFloat(unitPrice) < 0) { toast('Ingresá un precio válido', 'error'); return; }
+  if (!ventaCart.length) { toast('Agregá al menos un producto al carrito', 'error'); return; }
+  const note = document.getElementById('ventaNote').value.trim();
+  const items = ventaCart.map(i => ({ productId: i.productId, quantity: i.quantity }));
 
   const res = await fetch('/api/client/ventas', {
     method: 'POST', headers: authH(),
-    body: JSON.stringify({ productId, quantity, unitPrice, paymentMethod: currentPayment, note })
+    body: JSON.stringify({ items, paymentMethod: currentPayment, note })
   });
   const data = await res.json();
   if (!res.ok) { toast(data.error, 'error'); return; }
 
-  // Reset form
-  document.getElementById('ventaProduct').value = '';
-  document.getElementById('ventaQty').value = '';
-  document.getElementById('ventaPrice').value = '';
+  ventaCart = [];
   document.getElementById('ventaNote').value = '';
-  document.getElementById('ventaStockInfo').textContent = '';
-  document.getElementById('ventaTotalDisplay').textContent = '$0';
+  renderCart();
 
-  toast(`Venta registrada — Nuevo stock: ${data.newStock}`, 'success');
+  const total = fmt(data.totalAmount);
+  toast(`Venta confirmada — ${data.items.length} ítem${data.items.length!==1?'s':''} · Total: ${total}`, 'success');
   loadVentasProducts();
   loadVentas();
   loadCaja();

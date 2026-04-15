@@ -536,9 +536,9 @@ app.post('/api/client/products', requireClient, requireSubscription, async (req,
       const count = await Product.countDocuments({ userId: req.client.id });
       if (count >= plan.products) return res.status(403).json({ error: `Tu plan permite hasta ${plan.products} productos. Actualizá al Plan Pro para tener productos ilimitados.` });
     }
-    const { name, category, barcode, stock, minStock, costPrice, salePrice, unit, description } = req.body;
+    const { name, category, barcode, stock, minStock, costPrice, salePrice, unit, description, emoji } = req.body;
     if (!name) return res.status(400).json({ error: 'El nombre es requerido' });
-    const prod = await Product.create({ userId: req.client.id, name: name.trim(), category: category || 'General', barcode: barcode || null, stock: parseInt(stock) || 0, minStock: parseInt(minStock) || 5, costPrice: parseFloat(costPrice) || 0, salePrice: parseFloat(salePrice) || 0, unit: unit || 'unidad', description: description || null });
+    const prod = await Product.create({ userId: req.client.id, name: name.trim(), category: category || 'General', barcode: barcode || null, stock: parseInt(stock) || 0, minStock: parseInt(minStock) || 5, costPrice: parseFloat(costPrice) || 0, salePrice: parseFloat(salePrice) || 0, unit: unit || 'unidad', description: description || null, emoji: emoji || null });
     res.status(201).json(prod);
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
@@ -547,7 +547,7 @@ app.put('/api/client/products/:id', requireClient, requireSubscription, async (r
   try {
     const prod = await Product.findOne({ _id: req.params.id, userId: req.client.id });
     if (!prod) return res.status(404).json({ error: 'Producto no encontrado' });
-    const { name, category, barcode, minStock, costPrice, salePrice, unit, description } = req.body;
+    const { name, category, barcode, minStock, costPrice, salePrice, unit, description, emoji } = req.body;
     const update = {};
     if (name) update.name = name.trim();
     if (category) update.category = category;
@@ -557,6 +557,7 @@ app.put('/api/client/products/:id', requireClient, requireSubscription, async (r
     if (salePrice !== undefined) update.salePrice = parseFloat(salePrice) || 0;
     if (unit) update.unit = unit;
     if (description !== undefined) update.description = description;
+    if (emoji !== undefined) update.emoji = emoji || null;
     await Product.updateOne({ _id: req.params.id }, { $set: update });
     res.json({ success: true });
   } catch (e) { res.status(500).json({ error: e.message }); }
@@ -573,33 +574,38 @@ app.delete('/api/client/products/:id', requireClient, requireSubscription, async
 // ── VENTAS ────────────────────────────────────────────────────────────────────
 app.post('/api/client/ventas', requireClient, requireSubscription, async (req, res) => {
   try {
-    const { productId, quantity, unitPrice, paymentMethod, note } = req.body;
-    if (!productId || !quantity || !paymentMethod) return res.status(400).json({ error: 'Datos incompletos' });
+    const { items, paymentMethod, note } = req.body;
+    if (!items || !Array.isArray(items) || items.length === 0)
+      return res.status(400).json({ error: 'Agregá al menos un producto al carrito' });
+    if (!paymentMethod) return res.status(400).json({ error: 'Seleccioná un método de pago' });
 
-    const prod = await Product.findOne({ _id: productId, userId: req.client.id });
-    if (!prod) return res.status(404).json({ error: 'Producto no encontrado' });
+    const results = [];
+    let totalAmount = 0;
 
-    const qty = parseInt(quantity);
-    if (qty <= 0) return res.status(400).json({ error: 'La cantidad debe ser mayor a 0' });
-    if (prod.stock < qty) return res.status(400).json({ error: `Stock insuficiente. Disponible: ${prod.stock} ${prod.unit}` });
+    for (const item of items) {
+      const prod = await Product.findOne({ _id: item.productId, userId: req.client.id });
+      if (!prod) return res.status(404).json({ error: `Producto no encontrado` });
+      const qty = parseInt(item.quantity);
+      if (qty <= 0) return res.status(400).json({ error: 'La cantidad debe ser mayor a 0' });
+      if (prod.stock < qty) return res.status(400).json({
+        error: `Stock insuficiente para "${prod.name}". Disponible: ${prod.stock} ${prod.unit}`
+      });
+      const price = prod.salePrice || 0;
+      const newStock = prod.stock - qty;
+      await Product.updateOne({ _id: item.productId }, { $set: { stock: newStock } });
+      await Movement.create({
+        userId: req.client.id, productId: item.productId,
+        productName: prod.name, category: prod.category || 'General',
+        type: 'venta', quantity: qty,
+        stockBefore: prod.stock, stockAfter: newStock,
+        unitPrice: price, costPrice: prod.costPrice || 0,
+        totalAmount: qty * price, paymentMethod, note: note || null
+      });
+      results.push({ productId: item.productId, productName: prod.name, quantity: qty, unitPrice: price, newStock });
+      totalAmount += qty * price;
+    }
 
-    const price = parseFloat(unitPrice) || prod.salePrice || 0;
-    const newStock = prod.stock - qty;
-
-    await Product.updateOne({ _id: productId }, { $set: { stock: newStock } });
-
-    const mov = await Movement.create({
-      userId: req.client.id, productId,
-      productName: prod.name, category: prod.category || 'General',
-      type: 'venta', quantity: qty,
-      stockBefore: prod.stock, stockAfter: newStock,
-      unitPrice: price, costPrice: prod.costPrice || 0,
-      totalAmount: qty * price,
-      paymentMethod: paymentMethod || 'efectivo',
-      note: note || null
-    });
-
-    res.status(201).json({ ...mov.toObject(), newStock });
+    res.status(201).json({ success: true, items: results, totalAmount, paymentMethod });
   } catch (e) { res.status(500).json({ error: e.message }); }
 });
 

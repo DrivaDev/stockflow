@@ -50,6 +50,7 @@ const productSchema = new mongoose.Schema({
   salePrice:   { type: Number, default: 0 },
   unit:        { type: String, default: 'unidad' },
   description: { type: String, default: null },
+  emoji:       { type: String, default: null },
 }, { timestamps: true });
 
 const movementSchema = new mongoose.Schema({
