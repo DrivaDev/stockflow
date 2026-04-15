@@ -4,16 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GestionStock — Gestión de Stock Inteligente</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3Crect x='5' y='18' width='5' height='9' rx='1.5' fill='white'/%3E%3Crect x='13.5' y='12' width='5' height='15' rx='1.5' fill='white'/%3E%3Crect x='22' y='6' width='5' height='21' rx='1.5' fill='white'/%3E%3C/svg%3E" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #6C63FF; --primary-dark: #5A52D5; --primary-light: #EEF0FF;
+      --primary: #EA580C; --primary-dark: #9A3412; --primary-light: #FFF7ED;
       --success: #10B981; --text: #1A1A2E; --text-muted: #64748B;
-      --bg: #FAFBFF; --card: #FFFFFF; --border: #E2E8F0;
-      --gradient: linear-gradient(135deg, #6C63FF 0%, #9C78FF 100%);
+      --bg: #FFFBF5; --card: #FFFFFF; --border: #E2E8F0;
+      --gradient: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
     }
     html { scroll-behavior: smooth; }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
@@ -37,8 +38,8 @@
       font-size: .95rem; cursor: pointer; text-decoration: none;
       transition: all .2s; border: none; font-family: inherit;
     }
-    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(108,99,255,.35); }
-    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(108,99,255,.45); }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 14px rgba(234,88,12,.35); }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(234,88,12,.45); }
     .btn-outline { background: transparent; border: 2px solid var(--primary); color: var(--primary); }
     .btn-outline:hover { background: var(--primary-light); }
     .btn-lg { padding: .85rem 2.2rem; font-size: 1.05rem; border-radius: 12px; }
@@ -47,10 +48,10 @@
     .hero {
       min-height: 100vh; display: flex; align-items: center;
       padding: 100px 2rem 4rem;
-      background: linear-gradient(160deg, #f8f9ff 0%, #eef0ff 60%, #f8f9ff 100%);
+      background: linear-gradient(160deg, #fffbf5 0%, #fff7ed 60%, #fffbf5 100%);
       position: relative; overflow: hidden;
     }
-    .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(108,99,255,.12) 0%, transparent 70%); border-radius: 50%; }
+    .hero::before { content: ''; position: absolute; top: -200px; right: -200px; width: 700px; height: 700px; background: radial-gradient(circle, rgba(234,88,12,.12) 0%, transparent 70%); border-radius: 50%; }
     .hero::after  { content: ''; position: absolute; bottom: -150px; left: -150px; width: 500px; height: 500px; background: radial-gradient(circle, rgba(255,101,132,.08) 0%, transparent 70%); border-radius: 50%; }
     .hero-inner { max-width: 1100px; margin: 0 auto; width: 100%; display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center; position: relative; z-index: 1; }
     .hero-badge { display: inline-flex; align-items: center; gap: 8px; background: var(--primary-light); color: var(--primary); padding: .4rem 1rem; border-radius: 100px; font-size: .85rem; font-weight: 600; margin-bottom: 1.5rem; }
@@ -95,7 +96,7 @@
     #features { background: #fff; }
     .features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.75rem; }
     .feature-card { padding: 2rem; border-radius: 16px; border: 1px solid var(--border); transition: all .25s; }
-    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(108,99,255,.12); border-color: var(--primary); }
+    .feature-card:hover { transform: translateY(-4px); box-shadow: 0 12px 36px rgba(234,88,12,.12); border-color: var(--primary); }
     .feature-icon { width: 52px; height: 52px; background: var(--primary-light); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; color: var(--primary); }
     .feature-icon svg { width: 24px; height: 24px; stroke-width: 1.8; }
     .feature-card h3 { font-size: 1.05rem; font-weight: 700; margin-bottom: .5rem; }
@@ -105,7 +106,7 @@
     #como-funciona { background: var(--bg); }
     .steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 2rem; }
     .step { text-align: center; padding: 1.5rem; }
-    .step-num { width: 56px; height: 56px; background: var(--gradient); color: #fff; font-size: 1.3rem; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; box-shadow: 0 6px 20px rgba(108,99,255,.3); }
+    .step-num { width: 56px; height: 56px; background: var(--gradient); color: #fff; font-size: 1.3rem; font-weight: 800; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 1.25rem; box-shadow: 0 6px 20px rgba(234,88,12,.3); }
     .step h3 { font-size: 1rem; font-weight: 700; margin-bottom: .5rem; }
     .step p { color: var(--text-muted); font-size: .9rem; }
 
@@ -113,7 +114,7 @@
     #precios { background: #fff; }
     .pricing-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 2rem; max-width: 760px; margin: 0 auto; }
     .pricing-card { border-radius: 20px; border: 2px solid var(--border); padding: 2.25rem; transition: all .25s; position: relative; }
-    .pricing-card.popular { border-color: var(--primary); box-shadow: 0 16px 48px rgba(108,99,255,.18); }
+    .pricing-card.popular { border-color: var(--primary); box-shadow: 0 16px 48px rgba(234,88,12,.18); }
     .popular-badge { position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: var(--gradient); color: #fff; padding: .3rem 1.1rem; border-radius: 100px; font-size: .8rem; font-weight: 700; white-space: nowrap; }
     .pricing-card h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: .3rem; }
     .pricing-card .plan-sub { color: var(--text-muted); font-size: .88rem; margin-bottom: 1.5rem; }
@@ -181,7 +182,7 @@
       <rect x="8" y="22" width="6" height="12" rx="2" fill="white" opacity=".9"/>
       <rect x="17" y="14" width="6" height="20" rx="2" fill="white"/>
       <rect x="26" y="8" width="6" height="26" rx="2" fill="white" opacity=".7"/>
-      <defs><linearGradient id="g" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#6C63FF"/><stop offset="1" stop-color="#9C78FF"/></linearGradient></defs>
+      <defs><linearGradient id="g" x1="0" y1="0" x2="40" y2="40"><stop stop-color="#EA580C"/><stop offset="1" stop-color="#F97316"/></linearGradient></defs>
     </svg>
     GestionStock
   </a>
@@ -403,6 +404,7 @@
   <p><a href="#">Términos y condiciones</a><a href="#">Privacidad</a><a href="#">Contacto</a></p>
   <br>
   <p style="font-size:.78rem">© 2025 GestionStock. Todos los derechos reservados.</p>
+  <p style="font-size:.78rem;margin-top:.6rem;color:rgba(255,255,255,.35);">Desarrollado por <a href="#" style="color:#EA580C;font-weight:600;">Driva Dev</a></p>
 </footer>
 
 <script>

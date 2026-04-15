@@ -4,17 +4,18 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GestionStock — Mi Gestor</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3Crect x='5' y='18' width='5' height='9' rx='1.5' fill='white'/%3E%3Crect x='13.5' y='12' width='5' height='15' rx='1.5' fill='white'/%3E%3Crect x='22' y='6' width='5' height='21' rx='1.5' fill='white'/%3E%3C/svg%3E" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #6C63FF; --primary-light: #EEF0FF; --primary-dark: #5A52D5;
+      --primary: #EA580C; --primary-light: #FFF7ED; --primary-dark: #9A3412;
       --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
       --text: #1A1A2E; --text-muted: #64748B; --border: #E2E8F0;
-      --bg: #F1F5F9; --card: #FFFFFF;
-      --sidebar: #0F0F1A; --sidebar-text: rgba(255,255,255,.7);
-      --gradient: linear-gradient(135deg, #6C63FF 0%, #9C78FF 100%);
+      --bg: #F8F4F0; --card: #FFFFFF;
+      --sidebar: #1C0A00; --sidebar-text: rgba(255,255,255,.7);
+      --gradient: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
     }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
@@ -24,11 +25,11 @@
     .sidebar-logo .logo-text { font-size: 1.25rem; font-weight: 900; color: #fff; }
     .sidebar-logo .logo-text span { color: var(--primary); }
     .sidebar-logo .biz-name { font-size: .78rem; color: rgba(255,255,255,.45); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .plan-chip { display: inline-block; margin-top: .4rem; background: rgba(108,99,255,.3); color: #a89bff; padding: 2px 8px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
+    .plan-chip { display: inline-block; margin-top: .4rem; background: rgba(234,88,12,.3); color: #fed7aa; padding: 2px 8px; border-radius: 100px; font-size: .7rem; font-weight: 700; }
     nav.sidebar-nav { flex: 1; padding: 1rem 0; }
     .nav-item { display: flex; align-items: center; gap: .75rem; padding: .7rem 1.5rem; color: var(--sidebar-text); cursor: pointer; transition: all .2s; border: none; background: none; width: 100%; font-family: inherit; font-size: .9rem; font-weight: 500; text-align: left; border-left: 3px solid transparent; }
-    .nav-item:hover { color: #fff; background: rgba(108,99,255,.15); }
-    .nav-item.active { color: #fff; background: rgba(108,99,255,.2); border-left-color: var(--primary); }
+    .nav-item:hover { color: #fff; background: rgba(234,88,12,.15); }
+    .nav-item.active { color: #fff; background: rgba(234,88,12,.2); border-left-color: var(--primary); }
     .nav-icon { display: flex; flex-shrink: 0; }
     .nav-icon svg { width: 18px; height: 18px; stroke-width: 1.8; }
     .nav-badge { margin-left: auto; background: var(--danger); color: #fff; font-size: .65rem; font-weight: 700; padding: 2px 6px; border-radius: 100px; min-width: 18px; text-align: center; }
@@ -44,7 +45,7 @@
 
     /* ── BUTTONS ── */
     .btn { display: inline-flex; align-items: center; gap: 6px; padding: .6rem 1.25rem; border-radius: 10px; font-weight: 600; font-size: .88rem; cursor: pointer; border: none; font-family: inherit; transition: all .2s; }
-    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 12px rgba(108,99,255,.3); }
+    .btn-primary { background: var(--gradient); color: #fff; box-shadow: 0 4px 12px rgba(234,88,12,.3); }
     .btn-primary:hover { opacity: .9; transform: translateY(-1px); }
     .btn-ghost { background: var(--bg); color: var(--text-muted); border: 1.5px solid var(--border); }
     .btn-ghost:hover { border-color: var(--primary); color: var(--primary); }

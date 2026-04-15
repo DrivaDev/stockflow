@@ -5,27 +5,28 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <title>Admin — GestionStock</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23EA580C'/%3E%3Crect x='5' y='18' width='5' height='9' rx='1.5' fill='white'/%3E%3Crect x='13.5' y='12' width='5' height='15' rx='1.5' fill='white'/%3E%3Crect x='22' y='6' width='5' height='21' rx='1.5' fill='white'/%3E%3C/svg%3E" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #6C63FF; --primary-light: #EEF0FF; --primary-dark: #5A52D5;
+      --primary: #EA580C; --primary-light: #FFF7ED; --primary-dark: #9A3412;
       --success: #10B981; --warning: #F59E0B; --danger: #EF4444;
       --text: #1A1A2E; --text-muted: #64748B; --border: #E2E8F0;
-      --bg: #F1F5F9; --card: #FFFFFF;
-      --sidebar: #0F0F1A; --sidebar-text: rgba(255,255,255,.7);
-      --gradient: linear-gradient(135deg, #6C63FF 0%, #9C78FF 100%);
+      --bg: #F8F4F0; --card: #FFFFFF;
+      --sidebar: #1C0A00; --sidebar-text: rgba(255,255,255,.7);
+      --gradient: linear-gradient(135deg, #EA580C 0%, #F97316 100%);
     }
     body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); display: flex; min-height: 100vh; }
 
     /* ── LOGIN ── */
     #loginScreen {
-      position: fixed; inset: 0; background: linear-gradient(160deg, #f4f5ff, #eef0ff);
+      position: fixed; inset: 0; background: linear-gradient(160deg, #fff7ed, #fed7aa);
       display: flex; align-items: center; justify-content: center; z-index: 9999;
     }
     .login-box {
       background: #fff; border-radius: 20px; padding: 2.5rem;
-      box-shadow: 0 20px 60px rgba(108,99,255,.15); width: 100%; max-width: 380px;
+      box-shadow: 0 20px 60px rgba(234,88,12,.15); width: 100%; max-width: 380px;
     }
     .login-logo { font-size: 1.5rem; font-weight: 900; color: var(--primary); text-align: center; margin-bottom: .25rem; }
     .login-box .sub { text-align: center; color: var(--text-muted); font-size: .88rem; margin-bottom: 2rem; }
@@ -60,7 +61,7 @@
       cursor: pointer; transition: all .2s; border: none; background: none;
       width: 100%; font-family: inherit; font-size: .9rem; font-weight: 500;
     }
-    .nav-item:hover, .nav-item.active { color: #fff; background: rgba(108,99,255,.2); }
+    .nav-item:hover, .nav-item.active { color: #fff; background: rgba(234,88,12,.2); }
     .nav-item.active { color: #fff; border-left: 3px solid var(--primary); }
     .nav-icon { display: flex; flex-shrink: 0; }
     .nav-icon svg { width: 18px; height: 18px; stroke-width: 1.8; }
@@ -127,7 +128,7 @@
     .action-btn {
       padding: 4px 10px; border-radius: 6px; font-size: .78rem; font-weight: 600;
       border: 1.5px solid; cursor: pointer; font-family: inherit; transition: all .15s;
-      background: none; margin-right: 4px;
+      background: none; margin-right: 8px;
     }
     .btn-edit { border-color: var(--primary); color: var(--primary); }
     .btn-edit:hover { background: var(--primary-light); }
@@ -209,7 +210,7 @@
 
 <!-- SIDEBAR -->
 <aside>
-  <div class="sidebar-logo">Stock<span>Flow</span></div>
+  <div class="sidebar-logo">Gestion<span>Stock</span></div>
   <nav class="sidebar-nav">
     <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon"><i data-lucide="bar-chart-2"></i></span> Dashboard</button>
     <button class="nav-item" onclick="showSection('users')"><span class="nav-icon"><i data-lucide="users"></i></span> Usuarios</button>
@@ -217,6 +218,7 @@
   </nav>
   <div class="sidebar-footer">
     <button onclick="logout()">← Cerrar sesión</button>
+    <div style="margin-top:.75rem;font-size:.7rem;color:rgba(255,255,255,.3);">Desarrollado por <span style="color:rgba(234,88,12,.8);font-weight:600;">Driva Dev</span></div>
   </div>
 </aside>
 
@@ -453,7 +455,7 @@ async function loadUsers() {
       <td style="white-space:nowrap">${fmtDate(u.created_at)}</td>
       <td>
         <button class="action-btn btn-edit" onclick="openEditUser(${JSON.stringify(u).replace(/"/g,'&quot;')})">Editar</button>
-        <button class="action-btn btn-delete" onclick="confirmDelete('user', ${u.id}, '${esc(u.name)}')">Eliminar</button>
+        <button class="action-btn btn-delete" onclick="confirmDelete('user', '${u.id}', '${esc(u.name)}')">Eliminar</button>
       </td>
     </tr>`).join('')
   : '<tr><td colspan="8" style="text-align:center;padding:2.5rem;color:var(--text-muted)">Sin usuarios con esos filtros.</td></tr>';
