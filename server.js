@@ -2,7 +2,21 @@ const express = require('express');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const path = require('path');
+const nodemailer = require('nodemailer');
 const { User, Admin, Discount, Product, Movement, connect, init } = require('./database');
+
+// ── EMAIL ─────────────────────────────────────────────────────────────────────
+const mailer = nodemailer.createTransport({
+  service: 'gmail',
+  auth: { user: process.env.GMAIL_USER || 'driva.devv@gmail.com', pass: process.env.GMAIL_PASS }
+});
+
+async function sendEmail(to, subject, html) {
+  if (!process.env.GMAIL_PASS) return; // silencioso si no está configurado
+  try {
+    await mailer.sendMail({ from: `"GestionStock" <${process.env.GMAIL_USER || 'driva.devv@gmail.com'}>`, to, subject, html });
+  } catch (e) { console.error('Email error:', e.message); }
+}
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -106,6 +120,22 @@ app.post('/api/register', async (req, res) => {
     const hashedPassword = bcrypt.hashSync(password, 10);
     try {
       const user = await User.create({ name, email, phone: phone || null, businessName: business_name || null, plan, status: 'active', discountCode: validatedCode, originalPrice: basePrice, finalPrice, password: hashedPassword });
+
+      // Email de bienvenida
+      sendEmail(email, '¡Bienvenido a GestionStock!', `
+        <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;padding:2rem">
+          <h2 style="color:#6C63FF">¡Hola ${name}!</h2>
+          <p>Tu cuenta en <strong>GestionStock</strong> fue creada exitosamente.</p>
+          <table style="width:100%;background:#f8f9ff;border-radius:10px;padding:1rem;margin:1.5rem 0;border-collapse:collapse">
+            <tr><td style="padding:.4rem 0;color:#64748B">Plan</td><td style="font-weight:600">${PLANS[plan].name}</td></tr>
+            <tr><td style="padding:.4rem 0;color:#64748B">Precio mensual</td><td style="font-weight:600">$${finalPrice.toLocaleString('es-AR')}</td></tr>
+            <tr><td style="padding:.4rem 0;color:#64748B">Email</td><td style="font-weight:600">${email}</td></tr>
+          </table>
+          <a href="https://stockflow-omega-seven.vercel.app/login" style="display:inline-block;background:linear-gradient(135deg,#6C63FF,#9C78FF);color:#fff;padding:.75rem 1.75rem;border-radius:10px;text-decoration:none;font-weight:700">Ingresar al sistema</a>
+          <p style="margin-top:2rem;color:#64748B;font-size:.85rem">Si tenés alguna duda, respondé este email y te ayudamos.</p>
+        </div>
+      `);
+
       res.status(201).json({ id: user._id, message: '¡Registro exitoso! Ya podés ingresar al sistema.', plan: PLANS[plan].name, final_price: finalPrice });
     } catch (e) {
       if (e.code === 11000) return res.status(409).json({ error: 'Ya existe un usuario con ese email' });

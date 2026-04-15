@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StockFlow — Mi Gestor</title>
+  <title>GestionStock — Mi Gestor</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -28,7 +29,8 @@
     .nav-item { display: flex; align-items: center; gap: .75rem; padding: .7rem 1.5rem; color: var(--sidebar-text); cursor: pointer; transition: all .2s; border: none; background: none; width: 100%; font-family: inherit; font-size: .9rem; font-weight: 500; text-align: left; border-left: 3px solid transparent; }
     .nav-item:hover { color: #fff; background: rgba(108,99,255,.15); }
     .nav-item.active { color: #fff; background: rgba(108,99,255,.2); border-left-color: var(--primary); }
-    .nav-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .nav-icon { display: flex; flex-shrink: 0; }
+    .nav-icon svg { width: 18px; height: 18px; stroke-width: 1.8; }
     .nav-badge { margin-left: auto; background: var(--danger); color: #fff; font-size: .65rem; font-weight: 700; padding: 2px 6px; border-radius: 100px; min-width: 18px; text-align: center; }
     .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,.08); }
     .sidebar-footer button { color: rgba(255,255,255,.5); background: none; border: none; cursor: pointer; font-family: inherit; font-size: .85rem; }
@@ -135,7 +137,8 @@
     .alert-item.low  { border-color: #FDE68A; background: #FFFBEB; }
     .alert-item.out  { border-color: #FECACA; background: #FFF5F5; }
     .alert-left { display: flex; align-items: center; gap: .75rem; }
-    .alert-icon { font-size: 1.3rem; }
+    .alert-icon { display: flex; }
+    .alert-icon svg { width: 20px; height: 20px; stroke-width: 2; }
     .alert-name { font-weight: 600; font-size: .92rem; }
     .alert-detail { font-size: .8rem; color: var(--text-muted); }
     .alert-stock { font-size: 1.1rem; font-weight: 800; }
@@ -146,10 +149,11 @@
     .mov-list { padding: 0; }
     .mov-item { display: flex; align-items: center; gap: 1rem; padding: .85rem 1.5rem; border-bottom: 1px solid var(--border); }
     .mov-item:last-child { border: none; }
-    .mov-type-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 1rem; flex-shrink: 0; }
-    .mov-type-icon.in  { background: #D1FAE5; }
-    .mov-type-icon.out { background: #FEE2E2; }
-    .mov-type-icon.adjustment { background: #E0E7FF; }
+    .mov-type-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+    .mov-type-icon svg { width: 17px; height: 17px; stroke-width: 2; }
+    .mov-type-icon.in  { background: #D1FAE5; color: #059669; }
+    .mov-type-icon.out { background: #FEE2E2; color: #DC2626; }
+    .mov-type-icon.adjustment { background: #E0E7FF; color: #4338CA; }
     .mov-info { flex: 1; min-width: 0; }
     .mov-product { font-weight: 600; font-size: .9rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .mov-note { font-size: .78rem; color: var(--text-muted); }
@@ -188,11 +192,11 @@
     <div class="plan-chip" id="planChip">Plan</div>
   </div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</button>
-    <button class="nav-item" onclick="showSection('products')"><span class="nav-icon">📦</span> Productos</button>
-    <button class="nav-item" onclick="showSection('movements')"><span class="nav-icon">🔄</span> Movimientos</button>
+    <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon"><i data-lucide="layout-dashboard"></i></span> Dashboard</button>
+    <button class="nav-item" onclick="showSection('products')"><span class="nav-icon"><i data-lucide="package"></i></span> Productos</button>
+    <button class="nav-item" onclick="showSection('movements')"><span class="nav-icon"><i data-lucide="arrow-left-right"></i></span> Movimientos</button>
     <button class="nav-item" onclick="showSection('alerts')">
-      <span class="nav-icon">🔔</span> Alertas
+      <span class="nav-icon"><i data-lucide="bell"></i></span> Alertas
       <span class="nav-badge" id="alertBadge" style="display:none">0</span>
     </button>
   </nav>
@@ -431,17 +435,17 @@ async function loadDashboard() {
   const critical = prods.filter(p => p.stock <= p.minStock).slice(0, 4);
   document.getElementById('dashAlerts').innerHTML = critical.length
     ? critical.map(p => alertItemHTML(p)).join('')
-    : '<div class="empty"><div class="icon">✅</div><p>Todo en orden</p></div>';
+    : '<div class="empty"><div class="icon">—</div><p>Todo en orden</p></div>';
 
-  // Recent movements
   document.getElementById('dashMovements').innerHTML = movs.length
     ? movs.map(m => movItemHTML(m)).join('')
-    : '<div class="empty"><div class="icon">📋</div><p>Sin movimientos aún</p></div>';
+    : '<div class="empty"><div class="icon">—</div><p>Sin movimientos aún</p></div>';
+  reIcons();
 }
 
 function alertItemHTML(p) {
   const cls = p.stock === 0 ? 'out' : 'low';
-  const icon = p.stock === 0 ? '🚨' : '⚠️';
+  const icon = p.stock === 0 ? '<i data-lucide="alert-circle"></i>' : '<i data-lucide="alert-triangle"></i>';
   return `<div class="alert-item ${cls}">
     <div class="alert-left">
       <span class="alert-icon">${icon}</span>
@@ -455,7 +459,7 @@ function alertItemHTML(p) {
 }
 
 function movItemHTML(m) {
-  const icons = { in: '📥', out: '📤', adjustment: '✏️' };
+  const icons = { in: '<i data-lucide="arrow-down-to-line"></i>', out: '<i data-lucide="arrow-up-from-line"></i>', adjustment: '<i data-lucide="sliders-horizontal"></i>' };
   const labels = { in: 'Entrada', out: 'Salida', adjustment: 'Ajuste' };
   const signs = { in: '+', out: '-', adjustment: '→' };
   return `<div class="mov-item">
@@ -638,7 +642,8 @@ async function loadMovements() {
   const movs = await res.json();
   document.getElementById('movementsList').innerHTML = movs.length
     ? movs.map(m => movItemHTML(m)).join('')
-    : '<div class="empty"><div class="icon">📋</div><p>Sin movimientos registrados aún.</p></div>';
+    : '<div class="empty"><p>Sin movimientos registrados aún.</p></div>';
+  reIcons();
 }
 
 // ── ALERTS ────────────────────────────────────────────────────────────────────
@@ -647,7 +652,8 @@ async function loadAlerts() {
   const { products: prods } = await res.json();
   document.getElementById('alertsList').innerHTML = prods.length
     ? prods.map(p => alertItemHTML(p)).join('')
-    : '<div class="empty"><div class="icon">✅</div><p>¡Todo el stock está en orden!</p></div>';
+    : '<div class="empty"><p>Todo el stock está en orden.</p></div>';
+  reIcons();
 }
 
 // ── DELETE ────────────────────────────────────────────────────────────────────
@@ -670,8 +676,12 @@ function closeModal(id) {
 }
 document.querySelectorAll('.modal-overlay').forEach(o => o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); }));
 
+// Re-render Lucide icons after dynamic content
+const _origInnerHTML = Object.getOwnPropertyDescriptor(Element.prototype, 'innerHTML');
+function reIcons() { setTimeout(() => lucide.createIcons(), 50); }
+
 // ── INIT ──────────────────────────────────────────────────────────────────────
-// Verificar token
+lucide.createIcons();
 fetch('/api/client/me', { headers: authH() })
   .then(r => { if (!r.ok) logout(); return r.json(); })
   .then(() => loadDashboard())

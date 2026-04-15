@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin — StockFlow</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <title>Admin — GestionStock</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -61,7 +62,8 @@
     }
     .nav-item:hover, .nav-item.active { color: #fff; background: rgba(108,99,255,.2); }
     .nav-item.active { color: #fff; border-left: 3px solid var(--primary); }
-    .nav-icon { font-size: 1.1rem; flex-shrink: 0; }
+    .nav-icon { display: flex; flex-shrink: 0; }
+    .nav-icon svg { width: 18px; height: 18px; stroke-width: 1.8; }
     .sidebar-footer { padding: 1.25rem 1.5rem; border-top: 1px solid rgba(255,255,255,.08); }
     .sidebar-footer button {
       color: var(--sidebar-text); background: none; border: none;
@@ -196,7 +198,7 @@
 <!-- LOGIN SCREEN -->
 <div id="loginScreen">
   <div class="login-box">
-    <div class="login-logo">StockFlow</div>
+    <div class="login-logo">GestionStock</div>
     <p class="sub">Panel de administración</p>
     <div class="field"><label>Usuario</label><input type="text" id="loginUser" placeholder="admin" /></div>
     <div class="field"><label>Contraseña</label><input type="password" id="loginPass" placeholder="••••••••" onkeydown="if(event.key==='Enter')doLogin()" /></div>
@@ -209,9 +211,9 @@
 <aside>
   <div class="sidebar-logo">Stock<span>Flow</span></div>
   <nav class="sidebar-nav">
-    <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon">📊</span> Dashboard</button>
-    <button class="nav-item" onclick="showSection('users')"><span class="nav-icon">👥</span> Usuarios</button>
-    <button class="nav-item" onclick="showSection('discounts')"><span class="nav-icon">🏷️</span> Descuentos</button>
+    <button class="nav-item active" onclick="showSection('dashboard')"><span class="nav-icon"><i data-lucide="bar-chart-2"></i></span> Dashboard</button>
+    <button class="nav-item" onclick="showSection('users')"><span class="nav-icon"><i data-lucide="users"></i></span> Usuarios</button>
+    <button class="nav-item" onclick="showSection('discounts')"><span class="nav-icon"><i data-lucide="tag"></i></span> Descuentos</button>
   </nav>
   <div class="sidebar-footer">
     <button onclick="logout()">← Cerrar sesión</button>
@@ -237,7 +239,7 @@
     <div class="card">
       <div class="card-header">
         <h2>Últimos registros</h2>
-        <button class="btn btn-primary" onclick="showSection('users')">Ver todos →</button>
+        <button class="btn btn-primary" onclick="showSection('users')">Ver todos</button>
       </div>
       <table><thead><tr><th>Usuario</th><th>Plan</th><th>Estado</th><th>Precio final</th><th>Fecha</th></tr></thead>
       <tbody id="recentUsers"><tr class="loading-row"><td colspan="5">Cargando...</td></tr></tbody></table>
@@ -351,7 +353,7 @@
 <!-- MODAL CONFIRMAR ELIMINAR -->
 <div class="modal-overlay" id="confirmModal">
   <div class="modal" style="max-width:380px;text-align:center">
-    <div style="font-size:3rem;margin-bottom:1rem">🗑️</div>
+    <div style="margin-bottom:1rem;color:var(--danger);display:flex;justify-content:center"><i data-lucide="trash-2" style="width:48px;height:48px;stroke-width:1.5"></i></div>
     <h3 id="confirmTitle">¿Eliminar?</h3>
     <p style="color:var(--text-muted);font-size:.9rem;margin:1rem 0" id="confirmMsg">Esta acción no se puede deshacer.</p>
     <div class="modal-actions" style="justify-content:center">
@@ -597,6 +599,7 @@ function fmtDate(s) {
 document.querySelectorAll('.modal-overlay').forEach(overlay => {
   overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
 });
+lucide.createIcons();
 </script>
 </body>
 </html>
